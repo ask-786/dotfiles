@@ -36,7 +36,7 @@ exec --no-startup-id nm-applet
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id exec ~/.config/i3/volume/max_volume.sh 120
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
@@ -186,7 +186,7 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command i3status --config ~/.config/i3/i3status/i3status.conf
+    status_command exec ~/.config/i3/i3status/network-speed.sh
 }
 
 #Auto start apps in preffered workpaces
@@ -194,15 +194,14 @@ exec --no-startup-id i3-msg "workspace 10"; exec /usr/bin/brave
 
 #Hot Keys
 bindsym Ctrl+Shift+l exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/Tree.png
-bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm
-bindsym Mod1+Ctrl+b exec --no-startup-id brave
+bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm # starts graphical file browser
+bindsym Mod1+Ctrl+b exec --no-startup-id brave # starts brave browser
 bindsym Print exec flameshot gui
-bindsym $mod+Shift+p exec flameshot screen
-
+bindsym $mod+Print exec flameshot screen
 
 #Brightness Cotrol
 bindsym XF86MonBrightnessUp exec light -A 10 # increase screen brightness
 bindsym XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
 
 exec_always nitrogen --restore
-exec_always blueberry-tray
+exec_always blueberry-tray && clipit

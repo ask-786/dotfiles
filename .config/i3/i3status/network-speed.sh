@@ -24,7 +24,7 @@
 #
 
 # Auto detect interfaces
-ifaces=$(ls /sys/class/net | grep -E '^(eno|enp|ens|enx|eth|wlan|wlp)')
+ifaces="eno1 wlo1"
 
 last_time=0
 last_rx=0
@@ -71,7 +71,8 @@ update_rate() {
   last_tx=$tx
 }
 
-i3status | (read line && echo "$line" && read line && echo "$line" && read line && echo "$line" && update_rate && while :
+i3status --config ~/.config/i3/i3status/i3status.conf | (read line && echo "$line" && read line && echo "$line" && read line && echo "$line" && update_rate && while :
+
 do
   read line
   update_rate
