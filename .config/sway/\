@@ -13,7 +13,7 @@ set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:ubuntumono 11
+font pango:monospace 9
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
@@ -36,8 +36,8 @@ exec --no-startup-id nm-applet
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/volume/max_volume.sh 100
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
@@ -46,19 +46,16 @@ floating_modifier $mod
 
 # move tiling windows via drag & drop by left-clicking into the title bar,
 # or left-clicking anywhere into the window while holding the floating modifier.
-#tiling_drag modifier titlebar
+tiling_drag modifier titlebar
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id alacritty
-bindsym $mod+Ctrl+Return exec --no-startup-id /usr/bin/alacritty -e tmux attach
+bindsym $mod+Return exec alacritty
 
 # kill focused window
 bindsym $mod+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id dmenu_run -i -fn 'ubuntumono'
-
-
+bindsym $mod+d exec --no-startup-id dmenu_run
 # A more modern dmenu replacement is rofi:
 # bindcode $mod+40 exec "rofi -modi drun,run -show drun"
 # There also is i3-dmenu-desktop which only displays applications shipping a
@@ -82,10 +79,6 @@ bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
-
-# move focused workspace between monitors
-bindsym $mod+Shift+greater move workspace to output right
-bindsym $mod+Shift+less move workspace to output left
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -161,7 +154,7 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec --no-startup-id "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -193,28 +186,22 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-    status_command exec ~/.config/i3/i3status/network-speed.sh
+        status_command i3status --config ~/.config/i3/i3status/i3status.conf
 }
 
 #Auto start apps in preffered workpaces
 exec --no-startup-id i3-msg "workspace 10"; exec /usr/bin/brave
 
+
 #Hot Keys
 bindsym Ctrl+Shift+l exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/Tree.png
-bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm # starts graphical file browser
-bindsym Mod1+Ctrl+b exec --no-startup-id brave # starts brave browser
-bindsym Print exec --no-startup-id flameshot gui
-bindsym $mod+Print exec --no-startup-id flameshot screen
+bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm
+bindsym Mod1+Ctrl+b exec --no-startup-id brave
+bindsym $mod+Shift+p exec --no-startup-id passmenu
+
 
 #Brightness Cotrol
-bindsym XF86MonBrightnessUp exec --no-startup-id light -A 5 # increase screen brightness
-bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 # decrease screen brightness
-bindsym $mod+XF86MonBrightnessUp exec --no-startup-id light -A 10 # increase screen brightness
-bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -U 10 # decrease screen brightness
+bindsym XF86MonBrightnessUp exec light -A 10 # increase screen brightness
+bindsym XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
 
-exec --no-startup-id /usr/lib/kdeconnectd
-exec --no-startup-id kdeconnect-indicator
-exec --no-startup-id redshift
-exec --no-startup-id nitrogen --restore
-exec --no-startup-id blueberry-tray && clipit
-exec_always --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec_always nitrogen --restore
