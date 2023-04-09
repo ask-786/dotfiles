@@ -200,7 +200,7 @@ bar {
 exec --no-startup-id i3-msg "workspace 10"; exec /usr/bin/brave
 
 #Hot Keys
-bindsym Ctrl+Shift+l exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/Tree.png
+bindsym Ctrl+Shift+l exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/arch-linux-3.png
 bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm # starts graphical file browser
 bindsym Mod1+Ctrl+b exec --no-startup-id brave # starts brave browser
 bindsym Print exec --no-startup-id flameshot gui
@@ -215,6 +215,7 @@ bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -U 10 # decrease s
 exec --no-startup-id /usr/lib/kdeconnectd
 exec --no-startup-id kdeconnect-indicator
 exec --no-startup-id redshift
-exec --no-startup-id nitrogen --restore
+exec --no-startup-id dunst
+exec --no-startup-id feh --bg-scale ~/Pictures/Wallpapers/arch-linux.jpg
 exec --no-startup-id blueberry-tray && clipit
 exec_always --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1

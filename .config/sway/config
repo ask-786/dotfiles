@@ -34,6 +34,10 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec --no-startup-id nm-applet
 
+# For flameshot environment varialbles
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
+exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
+
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/volume/max_volume.sh 100
@@ -211,7 +215,7 @@ bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -U 10 # decrease s
 exec --no-startup-id swaybg -i ~/Pictures/Wallpapers/pexels-mark-degnan-1008659.jpg
 exec --no-startup-id /usr/lib/kdeconnectd
 exec --no-startup-id kdeconnect-indicator
-exec --no-startup-id gammastep
+exec --no-startup-id gammastep -l 11.25:75.78
 exec --no-startup-id blueberry-tray
 exec --no-startup-id clipit
 exec_always --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
