@@ -54,7 +54,7 @@ floating_modifier $mod
 
 # start a terminal
 bindsym $mod+Return exec --no-startup-id alacritty
-bindsym $mod+Ctrl+Return exec --no-startup-id /usr/bin/alacritty -e tmux attach
+bindsym $mod+Ctrl+Return exec --no-startup-id alacritty -e tmux attach
 
 # kill focused window
 bindsym $mod+q kill
@@ -161,7 +161,7 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec --no-startup-id "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e exec --no-startup-id "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your X session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -215,7 +215,7 @@ bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -U 10 # decrease s
 exec --no-startup-id swaybg -i ~/Pictures/Wallpapers/pexels-mark-degnan-1008659.jpg
 exec --no-startup-id /usr/lib/kdeconnectd
 exec --no-startup-id kdeconnect-indicator
-exec --no-startup-id gammastep -l 11.25:75.78
+exec --no-startup-id gammastep
 exec --no-startup-id blueberry-tray
 exec --no-startup-id clipit
 exec_always --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
