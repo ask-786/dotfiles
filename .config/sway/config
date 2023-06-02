@@ -21,18 +21,18 @@ font pango:ubuntumono 11
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
-exec --no-startup-id dex --autostart --environment i3
+exec dex --autostart --environment i3
 
 # The combination of xss-lock, nm-applet and pactl is a popular choice, so
 # they are included here as an example. Modify as you see fit.
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec xss-lock --transfer-sleep-lock -- i3lock --nofork
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
-exec --no-startup-id nm-applet
+exec nm-applet
 
 # For flameshot environment varialbles
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
@@ -40,10 +40,10 @@ exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activati
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/volume/max_volume.sh 100
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+bindsym XF86AudioRaiseVolume exec ~/.config/i3/volume/max_volume.sh 100
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -53,14 +53,14 @@ floating_modifier $mod
 #tiling_drag modifier titlebar
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id alacritty
-bindsym $mod+Ctrl+Return exec --no-startup-id alacritty -e tmux attach
+bindsym $mod+Return exec alacritty
+bindsym $mod+Ctrl+Return exec alacritty -e tmux attach
 
 # kill focused window
 bindsym $mod+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id dmenu_run -i -fn 'ubuntumono'
+bindsym $mod+d exec dmenu_run -i -fn 'ubuntumono'
 
 
 # A more modern dmenu replacement is rofi:
@@ -161,7 +161,7 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec --no-startup-id "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your X session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
+bindsym $mod+Shift+e exec "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your X session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -197,25 +197,25 @@ bar {
 }
 
 #Auto start apps in preffered workpaces
-exec --no-startup-id i3-msg "workspace 10"; exec /usr/bin/brave
+exec i3-msg "workspace 10"; exec /usr/bin/brave
 
 #Hot Keys
-bindsym Ctrl+Shift+l exec --no-startup-id swaylock -i ~/Pictures/Wallpapers/Tree.png
-bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm # starts graphical file browser
-bindsym Mod1+Ctrl+b exec --no-startup-id brave # starts brave browser
-bindsym Print exec --no-startup-id flameshot gui
-bindsym $mod+Print exec --no-startup-id flameshot screen
+bindsym Ctrl+Shift+l exec swaylock -i ~/Pictures/Wallpapers/Tree.png
+bindsym Mod1+Ctrl+h exec pcmanfm # starts graphical file browser
+bindsym Mod1+Ctrl+b exec brave # starts brave browser
+bindsym Print exec flameshot gui
+bindsym $mod+Print exec flameshot screen
 
 #Brightness Cotrol
-bindsym XF86MonBrightnessUp exec --no-startup-id light -A 5 # increase screen brightness
-bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 # decrease screen brightness
-bindsym $mod+XF86MonBrightnessUp exec --no-startup-id light -A 10 # increase screen brightness
-bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -U 10 # decrease screen brightness
+bindsym XF86MonBrightnessUp exec light -A 5 # increase screen brightness
+bindsym XF86MonBrightnessDown exec light -U 5 # decrease screen brightness
+bindsym $mod+XF86MonBrightnessUp exec light -A 10 # increase screen brightness
+bindsym $mod+XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
 
-exec --no-startup-id swaybg -i ~/Pictures/Wallpapers/pexels-mark-degnan-1008659.jpg
-exec --no-startup-id /usr/lib/kdeconnectd
-exec --no-startup-id kdeconnect-indicator
-exec --no-startup-id gammastep
-exec --no-startup-id blueberry-tray
-exec --no-startup-id clipit
-exec_always --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec swaybg -i ~/Pictures/Wallpapers/pexels-mark-degnan-1008659.jpg
+exec /usr/lib/kdeconnectd
+exec kdeconnect-indicator
+exec gammastep
+exec blueberry-tray
+exec clipit
+exec_always /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
