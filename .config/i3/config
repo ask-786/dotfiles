@@ -201,7 +201,7 @@ exec --no-startup-id i3-msg "workspace 10"; exec /usr/bin/brave
 
 #Hot Keys
 bindsym Ctrl+Shift+l exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/gritty.png
-bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm # starts graphical file browser
+bindsym Mod1+Ctrl+h exec --no-startup-id thunar # starts graphical file browser
 bindsym Mod1+Ctrl+b exec --no-startup-id brave # starts brave browser
 bindsym Print exec --no-startup-id flameshot gui
 bindsym $mod+Print exec --no-startup-id flameshot screen
