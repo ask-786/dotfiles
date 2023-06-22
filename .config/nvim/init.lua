@@ -1,2 +1,2 @@
-require("ask")
-print("Hello from Ask")
+require("ask.remap")
+require("ask.set")
