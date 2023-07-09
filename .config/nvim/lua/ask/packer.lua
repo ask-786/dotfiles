@@ -22,6 +22,7 @@ return require('packer').startup(function(use)
 	use('ThePrimeagen/harpoon')
 	use('tpope/vim-fugitive')
 	use('mbbill/undotree')
+    use('jose-elias-alvarez/null-ls.nvim')
 	use {
 		'VonHeikemen/lsp-zero.nvim',
 		branch = 'v2.x',

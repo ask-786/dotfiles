@@ -197,7 +197,7 @@ bar {
 }
 
 #Auto start apps in preffered workpaces
-exec --no-startup-id i3-msg "workspace 10"; exec /usr/bin/brave
+exec --no-startup-id i3-msg 'workspace $ws10; exec --no-startup-id /usr/bin/brave; workspace $ws10'
 
 #Hot Keys
 bindsym Ctrl+Shift+l exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/gritty.png
