@@ -23,6 +23,7 @@ return require('packer').startup(function(use)
 	use('tpope/vim-fugitive')
 	use('mbbill/undotree')
     use('jose-elias-alvarez/null-ls.nvim')
+    use('nvim-telescope/telescope-ui-select.nvim')
 	use {
 		'VonHeikemen/lsp-zero.nvim',
 		branch = 'v2.x',
