@@ -24,6 +24,7 @@ return require('packer').startup(function(use)
 	use('mbbill/undotree')
     use('jose-elias-alvarez/null-ls.nvim')
     use('nvim-telescope/telescope-ui-select.nvim')
+    use('christoomey/vim-tmux-navigator')
 	use {
 		'VonHeikemen/lsp-zero.nvim',
 		branch = 'v2.x',

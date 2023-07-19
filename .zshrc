@@ -109,7 +109,6 @@ alias ll="ls -alF --color=auto"
 alias :q="exit"
 alias .="/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME"
 alias tma='tmux a'
-alias vim='nvim'
 
 # Jump and delete words using control key and arrow keys
 bindkey "^[[1;5D" backward-word
@@ -122,6 +121,15 @@ bindkey -s "^f" 'zsh ~/.local/scripts/tmux-sessionizer.sh \n'
 
 # Starhip Prompt
 eval "$(starship init zsh)"
+
+# I want to use $@ for all arguments but they don't contain space for me
+function flutter-watch(){
+  tmux send-keys "flutter run $1 $2 $3 $4 --pid-file=/tmp/tf1.pid" Enter \;\
+  split-window -v \;\
+  send-keys 'npx -y nodemon -e dart -x "cat /tmp/tf1.pid | xargs kill -s USR1"' Enter \;\
+  resize-pane -y 5 -t 1 \;\
+  select-pane -t 0 \;
+}
 
 #Syntax hightlighting
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
