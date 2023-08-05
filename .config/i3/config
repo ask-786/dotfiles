@@ -36,7 +36,7 @@ exec --no-startup-id nm-applet
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/volume/max_volume.sh 100
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/scripts/max_volume.sh 100
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
@@ -193,7 +193,7 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-    status_command exec ~/.config/i3/i3status/network-speed.sh
+    status_command exec ~/.config/i3/scripts/network-speed.sh
 }
 
 #Auto start apps in preffered workpaces
@@ -212,11 +212,15 @@ bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 # decrease screen 
 bindsym $mod+XF86MonBrightnessUp exec --no-startup-id light -A 10 # increase screen brightness
 bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -U 10 # decrease screen brightness
 
+# Suspend
+bindsym $mod+Shift+period exec systemctl suspend
+
 exec --no-startup-id /usr/lib/kdeconnectd
 exec --no-startup-id kdeconnect-indicator
 exec --no-startup-id redshift
 exec --no-startup-id dunst
 exec --no-startup-id feh --bg-scale /usr/share/backgrounds/archlinux/split.png
 exec --no-startup-id blueberry-tray && clipit
+exec --no-startup-id ~/.config/i3/scripts/battery-popup.sh -n -m "Battery Low!!" -t "3m" 
 exec_always --no-startup-id picom & --no-fading-openclose 
 exec_always --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
