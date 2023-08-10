@@ -6,7 +6,7 @@ lsp_zero.on_attach(function(client, bufnr)
     lsp_zero.default_keymaps({ buffer = bufnr })
 end)
 
-lsp_zero.ensure_installed({ 'tsserver', 'eslint', 'lua_ls', 'rust_analyzer' })
+lsp_zero.ensure_installed({ 'tsserver', 'eslint', 'lua_ls', 'rust_analyzer', 'gopls' })
 
 local on_attach = function(client, bufnr)
     local opts = { buffer = bufnr, remap = false }
@@ -35,6 +35,7 @@ lsp_zero.format_mapping('<leader>ff', {
         ['rust_analyzer'] = { 'rust' },
         ['null-ls'] = { 'javascript', 'typescript' },
         ['dartls'] = { 'dart' },
+        ['gopls'] = { "go", "gomod", "gowork", "gotmpl" },
     }
 })
 
@@ -42,8 +43,13 @@ lsp_zero.format_mapping('<leader>ff', {
 lsp_config['dartls'].setup({
     on_attach = on_attach,
     root_dir = lsp_config.util.root_pattern("pubspec.yaml"),
+    filetypes = { "dart" },
     init_options = {
+        onlyAnalyzeProjectsWithOpenFiles = false,
+        suggestFromUnimportedLibraries = true,
         closingLabels = true,
+        outline = true,
+        fluttreOutline = false
     },
     settings = {
         dart = {
@@ -57,6 +63,27 @@ lsp_config['dartls'].setup({
             showTodos = true,
         }
     }
+})
+
+lsp_config['gopls'].setup({
+    on_attach = on_attach,
+    cmd = { "gopls" },
+    filetypes = { "go", "gomod", "gowork", "gotmpl" },
+    root_dir = lsp_config.util.root_pattern("go.work", "go.mod", ".git"),
+    settings = {
+        gopls = {
+            completeUnimported = true,
+            usePlaceholders = true,
+            analyses = {
+                unusedparams = true,
+            }
+        }
+    }
+})
+
+lsp_config['rust_analyzer'].setup({
+    on_attach = on_attach,
+    cmd = { "rustup", "run", "stable", "rust-analyzer" },
 })
 
 lsp_zero.setup()
