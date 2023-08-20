@@ -117,7 +117,7 @@ bindkey "^H" backward-kill-word
 
 # Key Bindings
 # tmux sessionizer
-bindkey -s "^f" 'zsh ~/.local/scripts/tmux-sessionizer.sh \n'
+bindkey -s "^f" "zsh ~/.local/scripts/tmux-sessionizer.sh \n"
 
 # Starhip Prompt
 eval "$(starship init zsh)"

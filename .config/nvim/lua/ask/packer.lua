@@ -17,6 +17,7 @@ return require('packer').startup(function(use)
     }
 
     use({ 'rose-pine/neovim', as = 'rose-pine' });
+    use({ 'catppuccin/nvim', as = 'catppuccin' });
     use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate' });
     use('nvim-treesitter/playground');
     use('ThePrimeagen/harpoon');
@@ -35,7 +36,7 @@ return require('packer').startup(function(use)
         requires = {
             -- LSP Support
             { 'neovim/nvim-lspconfig' }, -- Required
-            {                 -- Optional
+            {                            -- Optional
                 'williamboman/mason.nvim',
                 run = function()
                     pcall(vim.cmd, 'MasonUpdate');
@@ -44,9 +45,9 @@ return require('packer').startup(function(use)
             { 'williamboman/mason-lspconfig.nvim' }, -- Optional
 
             -- Autocompletion
-            { 'hrsh7th/nvim-cmp' }, -- Required
+            { 'hrsh7th/nvim-cmp' },     -- Required
             { 'hrsh7th/cmp-nvim-lsp' }, -- Required
-            { 'L3MON4D3/LuaSnip' }, -- Required
+            { 'L3MON4D3/LuaSnip' },     -- Required
         }
     }
 end)

@@ -8,6 +8,10 @@ end)
 
 lsp_zero.ensure_installed({ 'tsserver', 'eslint', 'lua_ls', 'rust_analyzer', 'gopls' })
 
+local function allow_format(servers)
+    return function(client) return vim.tbl_contains(servers, client.name) end
+end
+
 local on_attach = function(client, bufnr)
     local opts = { buffer = bufnr, remap = false }
 
@@ -21,23 +25,30 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', "<leader>rn", function() vim.lsp.buf.rename() end, opts);
     vim.keymap.set('i', "<C-a>", function() vim.lsp.buf.signature_help() end, opts);
     vim.keymap.set("n", "<leader>dg", function() vim.diagnostic.setqflist() end, opts);
+    vim.keymap.set({ 'n', 'x' }, '<leader>ff', function()
+        vim.lsp.buf.format({
+            async = false,
+            timeout_ms = 10000,
+            filter = allow_format({ 'lua_ls', 'rust_analyzer', 'null-ls', 'dartls', 'gopls' })
+        })
+    end, opts)
 end
 
 lsp_zero.on_attach(on_attach);
 
-lsp_zero.format_mapping('<leader>ff', {
-    format_opts = {
-        async = false,
-        timeout_ms = 10000,
-    },
-    servers = {
-        ['lua_ls'] = { 'lua' },
-        ['rust_analyzer'] = { 'rust' },
-        ['null-ls'] = { 'javascript', 'typescript' },
-        ['dartls'] = { 'dart' },
-        ['gopls'] = { "go", "gomod", "gowork", "gotmpl" },
-    }
-})
+--lsp_zero.format_mapping('<leader>ff', {
+--   format_opts = {
+--       async = false,
+--       timeout_ms = 10000,
+--   },
+--   servers = {
+--       ['lua_ls'] = { 'lua' },
+--       ['rust_analyzer'] = { 'rust' },
+--       ['null-ls'] = { 'javascript', 'typescript', 'json' },
+--       ['dartls'] = { 'dart' },
+--       ['gopls'] = { "go", "gomod", "gowork", "gotmpl" },
+--   }
+--})
 
 
 lsp_config['dartls'].setup({
@@ -49,7 +60,7 @@ lsp_config['dartls'].setup({
         suggestFromUnimportedLibraries = true,
         closingLabels = true,
         outline = true,
-        fluttreOutline = false
+        fluttreOutline = true,
     },
     settings = {
         dart = {
@@ -102,5 +113,5 @@ null_ls.setup({
     on_attach = on_attach,
     sources = {
         null_ls.builtins.formatting.prettier,
-    }
+    },
 })
