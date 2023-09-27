@@ -29,7 +29,14 @@ local on_attach = function(client, bufnr)
         vim.lsp.buf.format({
             async = false,
             timeout_ms = 10000,
-            filter = allow_format({ 'lua_ls', 'rust_analyzer', 'null-ls', 'dartls', 'gopls' })
+            filter = allow_format({
+                'lua_ls',
+                'rust_analyzer',
+                'null-ls',
+                'dartls',
+                'gopls',
+                'clangd'
+            })
         })
     end, opts)
 end
@@ -49,7 +56,6 @@ lsp_zero.on_attach(on_attach);
 --       ['gopls'] = { "go", "gomod", "gowork", "gotmpl" },
 --   }
 --})
-
 
 lsp_config['dartls'].setup({
     on_attach = on_attach,

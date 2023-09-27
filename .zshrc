@@ -133,3 +133,10 @@ function flutter-watch(){
 
 #Syntax hightlighting
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
+
+# bun completions
+[ -s "/home/ask-786/.bun/_bun" ] && source "/home/ask-786/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

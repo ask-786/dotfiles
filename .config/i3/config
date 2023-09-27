@@ -84,8 +84,8 @@ bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
 # move focused workspace between monitors
-bindsym $mod+Shift+greater move workspace to output right
-bindsym $mod+Shift+less move workspace to output left
+# bindsym $mod+Shift+greater move workspace to output right
+# bindsym $mod+Shift+less move workspace to output left
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -160,8 +160,6 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec --no-startup-id "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -200,8 +198,7 @@ bar {
 exec --no-startup-id i3-msg 'workspace $ws10; exec --no-startup-id /usr/bin/brave; workspace $ws10'
 
 #Hot Keys
-bindsym Ctrl+Shift+l exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/gritty.png
-bindsym Mod1+Ctrl+h exec --no-startup-id thunar # starts graphical file browser
+bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm # starts graphical file browser
 bindsym Mod1+Ctrl+b exec --no-startup-id brave # starts brave browser
 bindsym Print exec --no-startup-id flameshot gui
 bindsym $mod+Print exec --no-startup-id flameshot screen
@@ -212,8 +209,14 @@ bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 # decrease screen 
 bindsym $mod+XF86MonBrightnessUp exec --no-startup-id light -A 10 # increase screen brightness
 bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -U 10 # decrease screen brightness
 
-# Suspend
-bindsym $mod+Shift+period exec systemctl suspend
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+e exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# Suspend, lock and poweroff
+bindsym $mod+Shift+comma exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/gritty.png
+bindsym $mod+Shift+period exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning -m 'You pressed the suspend shortcut. Do you really want to suspend now?' -B 'Yes, suspend' 'systemctl suspend'"  
+bindsym $mod+Shift+slash exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning -m 'You pressed the reboot shortcut. Do you really want to reboot now?' -B 'Yes, reboot' 'reboot'"  
+bindsym $mod+Shift+semicolon exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown now?' -B 'Yes, shutdown' 'poweroff'"  
 
 exec --no-startup-id /usr/lib/kdeconnectd
 exec --no-startup-id kdeconnect-indicator

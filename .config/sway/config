@@ -193,16 +193,16 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-    status_command exec ~/.config/i3/i3status/network-speed.sh
+    status_command exec ~/.config/sway/i3status/network-speed.sh
 }
 
 #Auto start apps in preffered workpaces
-exec i3-msg "workspace 10"; exec /usr/bin/brave
+exec i3-msg "workspace $ws10"; exec /usr/bin/brave
 
 #Hot Keys
 bindsym Ctrl+Shift+l exec swaylock -i ~/Pictures/Wallpapers/Tree.png
 bindsym Mod1+Ctrl+h exec pcmanfm # starts graphical file browser
-bindsym Mod1+Ctrl+b exec brave # starts brave browser
+bindsym Mod1+Ctrl+b exec /usr/bin/brave # starts brave browser
 bindsym Print exec flameshot gui
 bindsym $mod+Print exec flameshot screen
 
@@ -212,7 +212,7 @@ bindsym XF86MonBrightnessDown exec light -U 5 # decrease screen brightness
 bindsym $mod+XF86MonBrightnessUp exec light -A 10 # increase screen brightness
 bindsym $mod+XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
 
-exec swaybg -i ~/Pictures/Wallpapers/pexels-mark-degnan-1008659.jpg
+exec swaybg -i ~/Pictures/Wallpapers/gritty.png
 exec /usr/lib/kdeconnectd
 exec kdeconnect-indicator
 exec gammastep
