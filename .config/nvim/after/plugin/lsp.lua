@@ -2,7 +2,7 @@ local lsp_zero = require('lsp-zero').preset({})
 local lsp_config = require('lspconfig');
 local null_ls = require('null-ls');
 
-lsp_zero.on_attach(function(client, bufnr)
+lsp_zero.on_attach(function(_, bufnr)
     lsp_zero.default_keymaps({ buffer = bufnr })
 end)
 
@@ -12,7 +12,7 @@ local function allow_format(servers)
     return function(client) return vim.tbl_contains(servers, client.name) end
 end
 
-local on_attach = function(client, bufnr)
+local on_attach = function(_, bufnr)
     local opts = { buffer = bufnr, remap = false }
 
     vim.keymap.set('n', "gd", function() vim.lsp.buf.definition() end, opts);
