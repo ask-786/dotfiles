@@ -201,7 +201,7 @@ exec --no-startup-id i3-msg 'workspace $ws10; exec --no-startup-id /usr/bin/brav
 bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm # starts graphical file browser
 bindsym Mod1+Ctrl+b exec --no-startup-id brave # starts brave browser
 bindsym Print exec --no-startup-id flameshot gui
-bindsym $mod+Print exec --no-startup-id flameshot screen
+bindsym $mod+Print exec --no-startup-id flameshot screen -p /home/ask-786/Pictures/Screenshots
 
 #Brightness Cotrol
 bindsym XF86MonBrightnessUp exec --no-startup-id light -A 5 # increase screen brightness
