@@ -214,7 +214,7 @@ bindsym $mod+Shift+e exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning 
 
 # Suspend, lock and poweroff
 bindsym $mod+Shift+comma exec --no-startup-id i3lock -i ~/Pictures/Wallpapers/gritty.png
-bindsym $mod+Shift+period exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning -m 'You pressed the suspend shortcut. Do you really want to suspend now?' -B 'Yes, suspend' 'systemctl suspend'"  
+bindsym $mod+Shift+period exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning -m 'You pressed the suspend shortcut. Do you really want to suspend now?' -B 'Yes, suspend' 'i3lock -i ~/Pictures/Wallpapers/gritty.png && systemctl suspend'"  
 bindsym $mod+Shift+slash exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning -m 'You pressed the reboot shortcut. Do you really want to reboot now?' -B 'Yes, reboot' 'reboot'"  
 bindsym $mod+Shift+semicolon exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown now?' -B 'Yes, shutdown' 'poweroff'"  
 
