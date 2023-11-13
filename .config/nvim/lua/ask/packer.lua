@@ -26,6 +26,7 @@ return require('packer').startup(function(use)
     use('nvim-telescope/telescope-ui-select.nvim');
     use('christoomey/vim-tmux-navigator');
     use('lewis6991/gitsigns.nvim')
+    use('j-hui/fidget.nvim');
     use {
         "windwp/nvim-autopairs",
         config = function() require("nvim-autopairs").setup {} end,

@@ -6,14 +6,18 @@ lsp_zero.on_attach(function(_, bufnr)
     lsp_zero.default_keymaps({ buffer = bufnr })
 end)
 
-require('mason').setup({})
+require('mason').setup({
+    ui = {
+        border = "rounded",
+    },
+})
+
 require('mason-lspconfig').setup({
     ensure_installed = { 'tsserver', 'eslint', 'lua_ls', 'rust_analyzer', 'gopls' },
     handlers = {
         lsp_zero.default_setup,
     },
 })
-
 
 local function allow_format(servers)
     return function(client) return vim.tbl_contains(servers, client.name) end
@@ -118,7 +122,11 @@ cmp.setup({
     mapping = {
         -- `Enter` key to confirm completion
         ['<CR>'] = cmp.mapping.confirm({ select = true }),
-    }
+    },
+    window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+    },
 })
 
 null_ls.setup({

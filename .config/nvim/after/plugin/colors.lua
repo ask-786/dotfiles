@@ -9,8 +9,8 @@ require("catppuccin").setup({
         shade = "dark",
         percentage = 0.01,         -- percentage of the shade to apply to the inactive window
     },
-    styles = {                   -- Handles the styles of general hi groups (see `:h highlight-args`):
-        comments = { "italic" }, -- Change the style of comments
+    styles = {                     -- Handles the styles of general hi groups (see `:h highlight-args`):
+        comments = { "italic" },   -- Change the style of comments
         conditionals = { "italic" },
         loops = {},
         functions = {},
