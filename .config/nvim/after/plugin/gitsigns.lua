@@ -23,11 +23,11 @@ require('gitsigns').setup {
 
         -- Actions
         map('n', '<leader>gS', gs.stage_hunk)
-        map('n', '<leader>gR', gs.reset_hunk)
+        map('n', '<leader>gu', gs.reset_hunk)
         map('v', '<leader>gS', function() gs.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
-        map('v', '<leader>gR', function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
+        map('v', '<leader>gu', function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
         map('n', '<leader>gU', gs.undo_stage_hunk)
-        map('n', '<leader>gu', gs.reset_buffer)
+        map('n', '<leader>gR', gs.reset_buffer)
         map('n', '<leader>gk', gs.preview_hunk)
         map('n', '<leader>gb', function() gs.blame_line { full = true } end)
         map('n', '<leader>gd', gs.diffthis)
