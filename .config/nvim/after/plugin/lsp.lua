@@ -4,7 +4,9 @@ local null_ls = require('null-ls');
 
 lsp_zero.on_attach(function(_, bufnr)
     lsp_zero.default_keymaps({ buffer = bufnr })
-end)
+end);
+
+require('lspconfig.ui.windows').default_options.border = 'rounded'
 
 require('mason').setup({
     ui = {
