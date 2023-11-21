@@ -86,7 +86,7 @@ lsp_config['dartls'].setup({
             analysisExcludedFolders = {
                 vim.fn.expand("$HOME/AppData/Local/Pub/Cache"),
                 vim.fn.expand("$HOME/.pub-cache/"),
-                vim.fn.expand("$HOME/tools/flutter/"),
+                vim.fn.expand("$HOME/dev/flutter/"),
             },
             updateImportsOnRename = true,
             completeFunctionCalls = true,

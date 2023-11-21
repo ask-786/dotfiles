@@ -200,6 +200,8 @@ exec --no-startup-id i3-msg 'workspace $ws10; exec --no-startup-id /usr/bin/brav
 #Hot Keys
 bindsym Mod1+Ctrl+h exec --no-startup-id pcmanfm # starts graphical file browser
 bindsym Mod1+Ctrl+b exec --no-startup-id brave # starts brave browser
+bindsym $mod+Shift+w exec --no-startup-id feh --randomize --bg-scale /usr/share/backgrounds/archlinux/
+
 bindsym Print exec --no-startup-id flameshot gui
 bindsym $mod+Print exec --no-startup-id flameshot screen -p /home/ask-786/Pictures/Screenshots
 
@@ -222,7 +224,7 @@ exec --no-startup-id /usr/lib/kdeconnectd
 exec --no-startup-id kdeconnect-indicator
 exec --no-startup-id redshift
 exec --no-startup-id dunst
-exec --no-startup-id feh --bg-scale /usr/share/backgrounds/archlinux/split.png
+exec --no-startup-id feh --randomize --bg-scale /usr/share/backgrounds/archlinux/
 exec --no-startup-id blueberry-tray && clipit
 exec --no-startup-id ~/.config/i3/scripts/battery-popup.sh -n -m "Battery Low!!" -t "3m" 
 exec_always --no-startup-id picom & --no-fading-openclose 
