@@ -48,7 +48,8 @@ local on_attach = function(_, bufnr)
                 'null-ls',
                 'dartls',
                 'gopls',
-                'clangd'
+                'clangd',
+                'jsonls',
             })
         })
     end, opts)
