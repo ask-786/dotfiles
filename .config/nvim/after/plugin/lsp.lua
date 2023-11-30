@@ -57,20 +57,6 @@ end
 
 lsp_zero.on_attach(on_attach);
 
---lsp_zero.format_mapping('<leader>ff', {
---   format_opts = {
---       async = false,
---       timeout_ms = 10000,
---   },
---   servers = {
---       ['lua_ls'] = { 'lua' },
---       ['rust_analyzer'] = { 'rust' },
---       ['null-ls'] = { 'javascript', 'typescript', 'json' },
---       ['dartls'] = { 'dart' },
---       ['gopls'] = { "go", "gomod", "gowork", "gotmpl" },
---   }
---})
-
 lsp_config['dartls'].setup({
     on_attach = on_attach,
     root_dir = lsp_config.util.root_pattern("pubspec.yaml"),
