@@ -109,6 +109,7 @@ alias ll="ls -alF --color=auto"
 alias :q="exit"
 alias .="/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME"
 alias tma='tmux a'
+alias open='xdg-open'
 
 # Jump and delete words using control key and arrow keys
 bindkey "^[[1;5D" backward-word

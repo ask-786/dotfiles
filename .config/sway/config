@@ -40,7 +40,7 @@ exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activati
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec ~/.config/i3/volume/max_volume.sh 100
+bindsym XF86AudioRaiseVolume exec ~/.config/sway/scripts/max_volume.sh 100
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
 bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
@@ -50,7 +50,7 @@ floating_modifier $mod
 
 # move tiling windows via drag & drop by left-clicking into the title bar,
 # or left-clicking anywhere into the window while holding the floating modifier.
-#tiling_drag modifier titlebar
+# tiling_drag modifier titlebar
 
 # start a terminal
 bindsym $mod+Return exec alacritty
@@ -117,7 +117,7 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+a focus parent
 
 # focus the child container
-#bindsym $mod+d focus child
+# bindsym $mod+d focus child
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
@@ -160,8 +160,6 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your X session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -193,30 +191,50 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-    status_command exec ~/.config/sway/i3status/network-speed.sh
+    status_command exec ~/.config/sway/scripts/network-speed.sh
 }
 
-#Auto start apps in preffered workpaces
+# Auto start apps in preffered workpaces
 exec i3-msg "workspace $ws10"; exec /usr/bin/brave
 
-#Hot Keys
-bindsym Ctrl+Shift+l exec swaylock -i ~/Pictures/Wallpapers/Tree.png
+# Hot Keys
 bindsym Mod1+Ctrl+h exec pcmanfm # starts graphical file browser
 bindsym Mod1+Ctrl+b exec /usr/bin/brave # starts brave browser
 bindsym Print exec flameshot gui
 bindsym $mod+Print exec flameshot screen
 
-#Brightness Cotrol
+# Media Control
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
+# Brightness Cotrol
 bindsym XF86MonBrightnessUp exec light -A 5 # increase screen brightness
 bindsym XF86MonBrightnessDown exec light -U 5 # decrease screen brightness
 bindsym $mod+XF86MonBrightnessUp exec light -A 10 # increase screen brightness
 bindsym $mod+XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
 
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+e exec "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your X session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
+
+# Suspend, lock and poweroff
+bindsym $mod+Shift+comma exec swaylock -i ~/Pictures/Wallpapers/gritty.png
+bindsym $mod+Shift+period exec "swaynag -f pango:ubuntu -t warning -m 'You pressed the suspend shortcut. Do you really want to suspend now?' -B 'Yes, suspend' 'systemctl suspend && swaylock -i ~/Pictures/Wallpapers/gritty.png'"  
+bindsym $mod+Shift+slash exec "swaynag -f pango:ubuntu -t warning -m 'You pressed the reboot shortcut. Do you really want to reboot now?' -B 'Yes, reboot' 'reboot'"  
+bindsym $mod+Shift+semicolon exec "swaynag -f pango:ubuntu -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown now?' -B 'Yes, shutdown' 'poweroff'"  
+
+# Flameshot setups 
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
+exec hash dbus-update-activation-environment 2>/dev/null && \
+     dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
+for_window [app_id="flameshot"] border pixel 0, floating enable, fullscreen disable, move absolute position 0 0
+
 exec swaybg -i ~/Pictures/Wallpapers/gritty.png
 exec /usr/lib/kdeconnectd
 exec kdeconnect-indicator
 exec gammastep
+exec dunst
 exec blueberry-tray
 exec clipit
-exec --no-startup-id /usr/lib/xdg-desktop-portal -r
+exec /usr/lib/xdg-desktop-portal -r
 exec_always /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1

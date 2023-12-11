@@ -211,6 +211,11 @@ bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 # decrease screen 
 bindsym $mod+XF86MonBrightnessUp exec --no-startup-id light -A 10 # increase screen brightness
 bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -U 10 # decrease screen brightness
 
+# Media Control
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec --no-startup-id "i3-nagbar -f pango:ubuntu -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
