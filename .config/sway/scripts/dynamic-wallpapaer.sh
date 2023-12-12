@@ -1,9 +1,9 @@
 #!/bin/sh
-swaybg -i $(find ~/Pictures/Wallpapers/ -type f | shuf -n1) -m fill &
+swaybg -i $(find /usr/share/backgrounds/archlinux/ -type f | shuf -n1) -m fill &
 OLD_PID=$!
 while true; do
     sleep 600
-    swaybg -i $(find ~/Pictures/Wallpapers/ -type f | shuf -n1) -m fill &
+    swaybg -i $(find /usr/share/backgrounds/archlinux/ -type f | shuf -n1) -m fill &
     NEXT_PID=$!
     sleep 5
     kill $OLD_PID

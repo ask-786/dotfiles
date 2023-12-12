@@ -230,12 +230,14 @@ exec hash dbus-update-activation-environment 2>/dev/null && \
      dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
 for_window [app_id="flameshot"] border pixel 0, floating enable, fullscreen disable, move absolute position 0 0
 
-exec /usr/lib/kdeconnectd
-exec kdeconnect-indicator
-exec gammastep
+# Gamma setup
+exec wl-gammarelay
+bindsym Control+XF86MonBrightnessDown  exec busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n -200
+bindsym Control+XF86MonBrightnessUp    exec busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n +200
+bindsym $mod+Control+XF86MonBrightnessDown  exec busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q 4900
+exec "busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q 4900"
+
 exec dunst
-exec blueberry-tray
-exec clipit
 exec ~/.config/sway/scripts/dynamic-wallpapaer.sh
 exec ~/.config/sway/scripts/battery-popup.sh -n -m "Battery Low!!" -t "3m" 
 exec /usr/lib/xdg-desktop-portal -r
