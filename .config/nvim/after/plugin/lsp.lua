@@ -79,7 +79,17 @@ lsp_config['dartls'].setup({
             completeFunctionCalls = true,
             showTodos = true,
         }
-    }
+    },
+    docs = {
+        description = [[
+            https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server/tool/lsp_spec
+
+            Language server for dart.
+        ]],
+        default_config = {
+            root_dir = [[root_pattern("pubspec.yaml")]],
+        },
+    },
 })
 
 lsp_config['gopls'].setup({
@@ -116,6 +126,14 @@ cmp.setup({
         completion = cmp.config.window.bordered(),
         documentation = cmp.config.window.bordered(),
     },
+    sources = cmp.config.sources({
+        { name = 'nvim_lsp' },
+        { name = 'luasnip' },
+        { name = 'path' },
+    }, {
+        { name = 'buffer' },
+    })
+
 })
 
 null_ls.setup({
