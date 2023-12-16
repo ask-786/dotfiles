@@ -215,8 +215,8 @@ bindsym $mod+XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
 bindsym $mod+Shift+e exec "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your X session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
 
 # Suspend, lock and poweroff
-bindsym $mod+Shift+comma exec swaylock -i ~/Pictures/Wallpapers/gritty.png
-bindsym $mod+Shift+period exec "swaynag -f pango:ubuntu -t warning -m 'You pressed the suspend shortcut. Do you really want to suspend now?' -B 'Yes, suspend' 'systemctl suspend && swaylock -i ~/Pictures/Wallpapers/gritty.png'"  
+bindsym $mod+Shift+comma exec swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg
+bindsym $mod+Shift+period exec "swaynag -f pango:ubuntu -t warning -m 'You pressed the suspend shortcut. Do you really want to suspend now?' -B 'Yes, suspend' 'systemctl suspend && swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg'"  
 bindsym $mod+Shift+slash exec "swaynag -f pango:ubuntu -t warning -m 'You pressed the reboot shortcut. Do you really want to reboot now?' -B 'Yes, reboot' 'reboot'"  
 bindsym $mod+Shift+semicolon exec "swaynag -f pango:ubuntu -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown now?' -B 'Yes, shutdown' 'poweroff'"  
 

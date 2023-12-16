@@ -28,6 +28,7 @@ return require('packer').startup(function(use)
     use('lewis6991/gitsigns.nvim')
     use('j-hui/fidget.nvim');
     use('sindrets/diffview.nvim');
+    use('folke/zen-mode.nvim');
     use {
         "windwp/nvim-autopairs",
         config = function() require("nvim-autopairs").setup {} end,
