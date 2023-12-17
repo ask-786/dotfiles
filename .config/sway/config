@@ -190,6 +190,13 @@ bar {
     status_command exec ~/.config/sway/scripts/network-speed.sh
 }
 
+# Input Configs
+input "type:touchpad" {
+    dwt enabled
+    natural_scroll enabled
+    tap enabled
+}
+
 # Auto start apps in preffered workpaces
 exec i3-msg "workspace $ws10"; exec /usr/bin/brave
 
