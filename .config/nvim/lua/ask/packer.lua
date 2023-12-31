@@ -18,7 +18,11 @@ return require('packer').startup(function(use)
     use({ "catppuccin/nvim", as = "catppuccin" });
     use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate' });
     use('nvim-treesitter/playground');
-    use('ThePrimeagen/harpoon');
+    use({
+        "ThePrimeagen/harpoon",
+        branch = "harpoon2",
+        requires = { { "nvim-lua/plenary.nvim" } }
+    });
     use('tpope/vim-fugitive');
     use('tpope/vim-commentary');
     use('mbbill/undotree');

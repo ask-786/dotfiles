@@ -116,7 +116,6 @@ bindkey "^[[1;5D" backward-word
 bindkey "^[[1;5C" forward-word
 bindkey "^H" backward-kill-word
 
-# Key Bindings
 # tmux sessionizer
 bindkey -s "^f" "zsh ~/.local/scripts/tmux-sessionizer.sh \n"
 
