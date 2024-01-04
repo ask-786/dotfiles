@@ -190,6 +190,12 @@ bar {
     status_command exec ~/.config/sway/scripts/network-speed.sh
 }
 
+# Idle behaviour
+exec swayidle -w timeout 10 'swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg' \
+    timeout 10 'swaymsg "output * dpms off"' \
+    resume 'swaymsg "output * dpms on"' \
+    before-sleep 'swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg'
+
 # Input Configs
 input "type:touchpad" {
     dwt enabled
