@@ -4,7 +4,7 @@ max_volume_pc=$1
 current_volume_pc=$(pactl list sinks | grep '<Your system language word that means "volume">' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')
 
 if (($(echo -n $current_volume_pc | wc -m) == 0)); then
-    current_volume_pc=$(pacmd list-sinks | rg -A 23 '^\s*\*\s*index: 2' | grep '^[[:space:]]volume:'  | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')
+    current_volume_pc=$(pacmd list-sinks | rg -A 23 '^\s*\*\s*index: ' | grep '^[[:space:]]volume:'  | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')
 fi
 
 echo $current_volume_pc;
