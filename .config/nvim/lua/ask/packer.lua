@@ -8,7 +8,7 @@ return require('packer').startup(function (use)
     use 'wbthomason/packer.nvim'
     use 'rstacruz/vim-closer'
     use {
-        'nvim-telescope/telescope.nvim', tag = '0.1.4',
+        'nvim-telescope/telescope.nvim',
         requires = { { 'nvim-lua/plenary.nvim' } }
     }
     use('nvim-tree/nvim-web-devicons')
@@ -31,6 +31,7 @@ return require('packer').startup(function (use)
     use('j-hui/fidget.nvim');
     use('sindrets/diffview.nvim');
     use('folke/zen-mode.nvim');
+    use('rafamadriz/friendly-snippets');
     use {
         "windwp/nvim-autopairs",
         config = function () require("nvim-autopairs").setup {} end,
@@ -41,7 +42,7 @@ return require('packer').startup(function (use)
         requires = {
             -- LSP Support
             { 'neovim/nvim-lspconfig' }, -- Required
-            {                      -- Optional
+            {                            -- Optional
                 'williamboman/mason.nvim',
                 run = function ()
                     pcall(vim.cmd, 'MasonUpdate');
@@ -50,9 +51,11 @@ return require('packer').startup(function (use)
             { 'williamboman/mason-lspconfig.nvim' }, -- Optional
 
             -- Autocompletion
-            { 'hrsh7th/nvim-cmp' }, -- Required
+            { 'hrsh7th/nvim-cmp' },     -- Required
             { 'hrsh7th/cmp-nvim-lsp' }, -- Required
-            { 'L3MON4D3/LuaSnip' }, -- Required
+            { 'L3MON4D3/LuaSnip',
+                build = "make install_jsregexp"
+            }, -- Required
             { 'hrsh7th/cmp-path' },
             { 'hrsh7th/cmp-buffer' },
         }

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# For Pipewire only.
 max_volume_pc=$1
 current_volume_pc=$(\
     pactl list sinks \
