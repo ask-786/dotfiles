@@ -32,6 +32,7 @@ return require('packer').startup(function (use)
     use('sindrets/diffview.nvim');
     use('folke/zen-mode.nvim');
     use('rafamadriz/friendly-snippets');
+    use('~/personal/treesitter/tree-sitter-ng-template')
     use {
         "windwp/nvim-autopairs",
         config = function () require("nvim-autopairs").setup {} end,
