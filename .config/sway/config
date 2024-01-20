@@ -191,10 +191,11 @@ bar {
 }
 
 # Idle behaviour
-exec swayidle -w timeout 10 'swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg' \
-    timeout 10 'swaymsg "output * dpms off"' \
+exec swayidle -w timeout 300 'swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg' \
+    timeout 60 'if pgrep -x swaylock; then swaymsg "output * dpms off"; fi' \
     resume 'swaymsg "output * dpms on"' \
-    before-sleep 'swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg'
+    before-sleep 'playerctl pause' \
+    before-sleep 'swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg' \
 
 # Input Configs
 input "type:touchpad" {
@@ -204,6 +205,7 @@ input "type:touchpad" {
 }
 
 # Auto start apps in preffered workpaces
+exec i3-msg "workspace $ws9"; exec /usr/bin/alacritty
 exec i3-msg "workspace $ws10"; exec /usr/bin/brave
 
 # Hot Keys
@@ -225,7 +227,7 @@ bindsym $mod+XF86MonBrightnessUp exec light -A 10 # increase screen brightness
 bindsym $mod+XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
 
 # exit sway (logs you out of your Wayland session)
-bindsym $mod+Shift+e exec "swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your X session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
+bindsym $mod+Shift+e exec "swaynag -f pango:ubuntu -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
 
 # Suspend, lock and poweroff
 bindsym $mod+Shift+comma exec swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg

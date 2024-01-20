@@ -4,4 +4,4 @@ require("fidget").setup({
             winblend = 0,
         },
     }
-})
+});
