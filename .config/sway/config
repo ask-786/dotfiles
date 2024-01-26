@@ -221,10 +221,10 @@ bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
 # Brightness Cotrol
-bindsym XF86MonBrightnessUp exec light -A 5 # increase screen brightness
-bindsym XF86MonBrightnessDown exec light -U 5 # decrease screen brightness
-bindsym $mod+XF86MonBrightnessUp exec light -A 10 # increase screen brightness
-bindsym $mod+XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
+bindsym XF86MonBrightnessUp exec brightnessctl set 5%+ # increase screen brightness
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%- # decrease screen brightness
+bindsym $mod+XF86MonBrightnessUp exec brightnessctl set 10%+ # increase screen brightness
+bindsym $mod+XF86MonBrightnessDown exec brightnessctl set 10%- # decrease screen brightness
 
 # exit sway (logs you out of your Wayland session)
 bindsym $mod+Shift+e exec "swaynag -f pango:ubuntu -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
