@@ -109,12 +109,17 @@ lsp_config['rust_analyzer'].setup({
 });
 
 lsp_config['lua_ls'].setup({
+    on_attach = on_attach,
     settings = {
         Lua = {
             diagnostics = { globals = { 'vim' }, },
         }
     }
 });
+
+lsp_config.pyright.setup({
+    on_attach = on_attach,
+})
 
 lsp_zero.setup();
 
@@ -140,5 +145,8 @@ cmp.setup({
 
 null_ls.setup({
     on_attach = on_attach,
-    sources = { null_ls.builtins.formatting.prettier, },
+    sources = {
+        null_ls.builtins.formatting.prettier,
+        null_ls.builtins.formatting.black,
+    },
 });
