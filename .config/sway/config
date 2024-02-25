@@ -212,7 +212,7 @@ bindsym Mod1+Ctrl+h exec pcmanfm # starts graphical file browser
 bindsym Mod1+Ctrl+b exec /usr/bin/brave # starts brave browser
 bindsym Print exec flameshot gui
 bindsym $mod+Print exec flameshot screen
-bindsym $mod+Shift+w exec ~/.config/sway/scripts/dynamic-wallpapaer.sh
+bindsym $mod+Shift+w exec ~/.config/sway/scripts/dynamic-web-wallpaper.sh
 
 # Media Control
 bindsym XF86AudioPlay exec playerctl play-pause
@@ -248,7 +248,7 @@ bindsym $mod+Control+XF86MonBrightnessDown  exec busctl --user set-property rs.w
 bindsym $mod+Control+XF86MonBrightnessUp  exec busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q 6500
 
 exec dunst
-exec ~/.config/sway/scripts/dynamic-wallpapaer.sh
+exec ~/.config/sway/scripts/dynamic-web-wallpaper.sh
 exec ~/.config/sway/scripts/battery-popup.sh -n -m "Battery Low!!" -t "3m" 
 exec /usr/lib/xdg-desktop-portal -r
 exec_always /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
