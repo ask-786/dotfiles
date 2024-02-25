@@ -212,7 +212,7 @@ bindsym Mod1+Ctrl+h exec pcmanfm # starts graphical file browser
 bindsym Mod1+Ctrl+b exec /usr/bin/brave # starts brave browser
 bindsym Print exec flameshot gui
 bindsym $mod+Print exec flameshot screen
-bindsym $mod+Shift+w exec ~/.config/sway/scripts/dynamic-web-wallpaper.sh
+bindsym $mod+Shift+w exec ~/.config/sway/scripts/randome-wallpaper.sh
 
 # Media Control
 bindsym XF86AudioPlay exec playerctl play-pause
