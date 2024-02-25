@@ -191,10 +191,12 @@ bar {
 }
 
 # Idle behaviour
-exec swayidle -w before-sleep 'playerctl pause' \
-    timeout 300 'swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg' \
-    timeout 360 'swaymsg "output * power off"' \
-    resume 'swaymsg "output * power on"' 
+exec swayidle -w \
+    timeout 360 'swaylock -f -i /usr/share/backgrounds/archlinux/pxfuel.jpg' \
+    timeout 360 'playerctl pause' \
+    timeout 600 'systemctl suspend && swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg' \
+    timeout 300 'swaymsg "output * power off"' \
+    resume 'swaymsg "output * power on"'
 
 # Input Configs
 input "type:touchpad" {
