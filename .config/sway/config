@@ -191,9 +191,9 @@ bar {
 
 # Idle behaviour
 exec swayidle -w \
-    timeout 360 'swaylock -f -i /usr/share/backgrounds/archlinux/pxfuel.jpg' \
+    timeout 360 'swaylock -f -i /home/ask-786/Pictures/Wallpapers/jorge-zapata-pBs0koIAF3s-unsplash.png' \
     timeout 360 'playerctl pause' \
-    timeout 600 'systemctl suspend && swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg' \
+    timeout 600 'systemctl suspend && swaylock -i /home/ask-786/Pictures/Wallpapers/jorge-zapata-pBs0koIAF3s-unsplash.png' \
     timeout 300 'swaymsg "output * power off"' \
     resume 'swaymsg "output * power on"'
 
@@ -230,12 +230,12 @@ bindsym $mod+XF86MonBrightnessDown exec brightnessctl set 10%- # decrease screen
 bindsym $mod+Shift+e exec "swaynag -f pango:UbuntuNerdFont -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' '~/.local/scripts/repairportals.sh && swaymsg exit'"
 
 # Suspend, lock and poweroff
-bindsym $mod+Shift+comma exec swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg
-bindsym $mod+Shift+period exec "swaynag -f pango:UbuntuNerdFont -t warning -m 'You pressed the suspend shortcut. Do you really want to suspend now?' -B 'Yes, suspend' 'systemctl suspend && swaylock -i /usr/share/backgrounds/archlinux/pxfuel.jpg'"  
-bindsym $mod+Shift+slash exec "swaynag -f pango:UbuntuNerdFont -t warning -m 'You pressed the reboot shortcut. Do you really want to reboot now?' -B 'Yes, reboot' 'reboot'"  
-bindsym $mod+Shift+semicolon exec "swaynag -f pango:UbuntuNerdFont -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown now?' -B 'Yes, shutdown' 'poweroff'"  
+bindsym $mod+Shift+comma exec swaylock -i /home/ask-786/Pictures/Wallpapers/jorge-zapata-pBs0koIAF3s-unsplash.png
+bindsym $mod+Shift+period exec "swaynag -f pango:UbuntuNerdFont -t warning -m 'You pressed the suspend shortcut. Do you really want to suspend now?' -B 'Yes, suspend' 'systemctl suspend && swaylock -i /home/ask-786/Pictures/Wallpapers/jorge-zapata-pBs0koIAF3s-unsplash.png'"
+bindsym $mod+Shift+slash exec "swaynag -f pango:UbuntuNerdFont -t warning -m 'You pressed the reboot shortcut. Do you really want to reboot now?' -B 'Yes, reboot' 'reboot'"
+bindsym $mod+Shift+semicolon exec "swaynag -f pango:UbuntuNerdFont -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown now?' -B 'Yes, shutdown' 'poweroff'"
 
-# Flameshot setups 
+# Flameshot setups
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 exec hash dbus-update-activation-environment 2>/dev/null && \
      dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
@@ -248,6 +248,6 @@ bindsym $mod+Control+XF86MonBrightnessUp  exec killall wlsunset && wlsunset -T 6
 
 exec dunst
 exec ~/.config/sway/scripts/dynamic-web-wallpaper.sh
-exec ~/.config/sway/scripts/battery-popup.sh -n -m "Battery Low!!" -t "3m" 
+exec ~/.config/sway/scripts/battery-popup.sh -n -m "Battery Low!!" -t "3m"
 exec /usr/lib/xdg-desktop-portal -r
 exec_always /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
