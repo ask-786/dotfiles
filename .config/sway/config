@@ -249,6 +249,7 @@ bindsym $mod+Control+XF86MonBrightnessDown  exec killall wlsunset && wlsunset -T
 bindsym $mod+Control+XF86MonBrightnessUp  exec killall wlsunset && wlsunset -T 6501 -t 6500 -l 11.25 -L 75.78
 
 exec dunst
+exec clipcatd
 exec ~/.config/sway/scripts/dynamic-web-wallpaper.sh
 exec ~/.config/sway/scripts/battery-popup.sh -n -m "Battery Low!!" -t "3m"
 exec /usr/lib/xdg-desktop-portal -r
