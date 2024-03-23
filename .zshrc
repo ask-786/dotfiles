@@ -73,7 +73,10 @@ export PATH="$PATH:/home/ask-786/dev/flutter/bin"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(
+	git 
+	zsh-syntax-highlighting
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -123,9 +126,6 @@ bindkey -s "^n" "nmtui \n"
 
 # Starhip Prompt
 eval "$(starship init zsh)"
-
-#Syntax hightlighting
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
 
 # bun completions
 [ -s "/home/ask-786/.bun/_bun" ] && source "/home/ask-786/.bun/_bun"
