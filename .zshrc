@@ -74,7 +74,7 @@ export PATH="$PATH:/home/ask-786/dev/flutter/bin"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-	git 
+	git
 	zsh-syntax-highlighting
 )
 
@@ -108,7 +108,7 @@ source $ZSH/oh-my-zsh.sh
 
 # My own aliases
 alias ..="cd .."
-alias ll="ls -alF --color=auto"
+alias ll="ls -alh --color=auto"
 alias :q="exit"
 alias .="/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME"
 alias tma='tmux a'
