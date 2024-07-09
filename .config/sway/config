@@ -213,7 +213,7 @@ exec i3-msg "workspace $ws10"; exec /usr/bin/brave
 bindsym Mod1+Ctrl+h exec pcmanfm # starts graphical file browser
 bindsym Mod1+Ctrl+b exec /usr/bin/brave # starts brave browser
 bindsym Print exec flameshot gui
-bindsym $mod+Ctrl+c exec clipcat-menu
+bindsym $mod+Ctrl+c exec greenclip print | grep . | dmenu -fn "UbuntuNerdFont" -i -l 10 -p clipboard | xargs -r -d'\n' -I '{}' greenclip print '{}'
 bindsym $mod+Print exec flameshot screen
 bindsym $mod+Shift+w exec ~/.config/sway/scripts/randome-wallpaper.sh
 
@@ -249,7 +249,7 @@ bindsym $mod+Control+XF86MonBrightnessDown  exec killall wlsunset && wlsunset -T
 bindsym $mod+Control+XF86MonBrightnessUp  exec killall wlsunset && wlsunset -T 6501 -t 6500 -l 11.25 -L 75.78
 
 exec dunst
-exec clipcatd
+exec greenclip daemon
 exec ~/.config/sway/scripts/dynamic-web-wallpaper.sh
 exec ~/.config/sway/scripts/battery-popup.sh -n -N -m "Battery Low!!" -t "3m"
 exec /usr/lib/xdg-desktop-portal -r

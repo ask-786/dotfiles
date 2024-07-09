@@ -23,22 +23,22 @@ background = "#0A0E14"
 foreground = "#B3B1AD"
 
 [font]
-size = 15
+size = 16
 
 [font.bold]
-family = "JetBrainsMonoNerdFontMono"
+family = "CaskaydiaMonoNerdFont"
 style = "Bold"
 
 [font.bold_italic]
-family = "JetBrainsMonoNerdFontMono"
+family = "CaskaydiaMonoNerdFont"
 style = "Bold Italic"
 
 [font.italic]
-family = "JetBrainsMonoNerdFontMono"
+family = "CaskaydiaMonoNerdFont"
 style = "Italic"
 
 [font.normal]
-family = "JetBrainsMonoNerdFontMono"
+family = "CaskaydiaMonoNerdFont"
 style = "Regular"
 
 [window]

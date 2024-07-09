@@ -76,6 +76,7 @@ export PATH="$PATH:/home/ask-786/dev/flutter/bin"
 plugins=(
 	git
 	zsh-syntax-highlighting
+	zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
