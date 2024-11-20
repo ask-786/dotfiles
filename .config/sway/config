@@ -206,8 +206,8 @@ input "type:touchpad" {
 }
 
 # Auto start apps in preffered workpaces
-exec i3-msg "workspace $ws9"; exec /usr/bin/alacritty
-exec i3-msg "workspace $ws10"; exec /usr/bin/brave
+exec swaymsg "workspace $ws9; exec alacritty"
+exec swaymsg "workspace $ws10; exec brave"
 
 # Hot Keys
 bindsym Mod1+Ctrl+h exec pcmanfm # starts graphical file browser
