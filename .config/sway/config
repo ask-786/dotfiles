@@ -50,8 +50,7 @@ floating_modifier $mod
 # tiling_drag modifier titlebar
 
 # start a terminal
-bindsym $mod+Return exec alacritty
-bindsym $mod+Ctrl+Return exec alacritty -e tmux attach
+bindsym $mod+Return exec kitty
 
 # kill focused window
 bindsym $mod+q kill
@@ -206,10 +205,10 @@ input "type:touchpad" {
 }
 
 # Auto start apps in preffered workpaces
-assign [app_id="Alacritty"] 9
+assign [app_id="Kitty"] 9
 assign [class="Brave-browser"] 10
 
-exec alacritty
+exec kitty
 exec brave
 
 # Hot Keys
