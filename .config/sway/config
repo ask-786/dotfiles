@@ -206,8 +206,11 @@ input "type:touchpad" {
 }
 
 # Auto start apps in preffered workpaces
-exec swaymsg "workspace $ws9; exec alacritty"
-exec swaymsg "workspace $ws10; exec brave"
+assign [app_id="Alacritty"] 9
+assign [class="Brave-browser"] 10
+
+exec alacritty
+exec brave
 
 # Hot Keys
 bindsym Mod1+Ctrl+h exec pcmanfm # starts graphical file browser
