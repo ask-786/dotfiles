@@ -1,3 +1,5 @@
+@import "mocha.css";
+
 * {
   border: none;
   border-radius: 0;
@@ -8,11 +10,6 @@
 window#waybar {
   background: rgba(0, 0, 0, 0.7);
   color: white;
-}
-
-#window {
-  font-weight: bold;
-  font-family: "Ubuntu";
 }
 
 #workspaces {
@@ -29,6 +26,11 @@ window#waybar {
 #workspaces button.focused {
   color: #c9545d;
   border-top: 2px solid #c9545d;
+}
+
+#workspaces button.active {
+  color: #c9545d;
+  border: 1px solid #c9545d;
 }
 
 #mode {

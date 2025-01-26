@@ -14,6 +14,7 @@
         "sway/window"
     ],
     "modules-right": [
+        "network#speed",
         "mpd",
         "idle_inhibitor",
         "pulseaudio",
@@ -123,7 +124,7 @@
     },
     "clock": {
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format": "{:%Y-%m-%d %H:%M}",
+        "format": "{:%Y-%m-%d %I:%M %p}",
     },
     "cpu": {
         "format": "{usage}% ",
@@ -183,6 +184,12 @@
         "format-linked": "{ifname} (No IP) ",
         "format-disconnected": "Disconnected ⚠",
         "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+    "network#speed": {
+        "interval": 1,
+        "format": "{ifname}",
+        "format-wifi": "{bandwidthDownBytes} {bandwidthUpBytes} ",
+        "format-ethernet": "{bandwidthDownBytes} {bandwidthUpBytes} ",
     },
     "pulseaudio": {
         "format": "{volume}% {icon} {format_source}",
