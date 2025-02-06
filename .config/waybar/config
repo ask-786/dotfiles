@@ -2,7 +2,7 @@
     "layer": "top",
     "position": "bottom",
     "height": 20,
-    "spacing": 15,
+    "spacing": 4,
     "modules-left": [
         "sway/workspaces",
         "hyprland/workspaces",
@@ -15,18 +15,26 @@
     ],
     "modules-right": [
         "network#speed",
+        "custom/separator",
         "mpd",
         "idle_inhibitor",
+        "custom/separator",
         "pulseaudio",
+        "custom/separator",
         "network",
+        "custom/separator",
         "cpu",
+        "custom/separator",
         "memory",
+        "custom/separator",
         "temperature",
+        "custom/separator",
         "backlight",
         "keyboard-state",
-        "sway/language",
+        "custom/separator",
         "battery",
         "battery#bat2",
+        "custom/separator",
         "clock",
         "tray"
     ],
@@ -212,6 +220,11 @@
             ]
         },
         "on-click": "pavucontrol"
+    },
+    "custom/separator": {
+        "format": "|",
+        "interval": "once",
+        "tooltip": false
     },
     "custom/media": {
         "format": "{icon} {}",
