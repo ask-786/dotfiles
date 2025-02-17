@@ -3,7 +3,7 @@
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(find  ~/ ~/work ~/personal  -mindepth 1 -maxdepth 3 -type d | fzf)
+    selected=$(find  ~/ -mindepth 1 -maxdepth 3 -type d -not -path "**/.cache**" | fzf)
 fi
 
 if [[ -z $selected ]]; then
