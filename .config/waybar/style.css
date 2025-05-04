@@ -14,21 +14,44 @@ window#waybar {
   padding: 0 5px;
 }
 
-#workspaces button {
-  padding: 0 5px;
+#workspaces {
+  margin: 0 4px;
+  padding: 0;
   background: transparent;
-  color: white;
-  border-top: 2px solid transparent;
+  border-radius: 0;
 }
 
+#workspaces button {
+  padding: 0 8px;
+  margin: 0 2px;
+  background: transparent;
+  color: #ffffff;
+  border: none;
+  border-radius: 0;
+  min-width: 10px;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+/* Focused workspace (i3-style) */
 #workspaces button.focused {
-  color: #c9545d;
-  border-top: 2px solid #c9545d;
+  color: #ffffff;
+  background: #4c7899;
+  border-radius: 4px;
 }
 
+/* Active workspace (visible but not focused) */
 #workspaces button.active {
-  color: #c9545d;
-  border: 1px solid #c9545d;
+  color: #ffffff;
+  background: #333333;
+  border-radius: 4px;
+}
+
+/* Urgent workspace (alerts) */
+#workspaces button.urgent {
+  color: #ffffff;
+  background: #ff0000;
+  border-radius: 4px;
 }
 
 #mode {
