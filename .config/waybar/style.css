@@ -18,24 +18,22 @@ window#waybar {
 
 #workspaces button {
   padding: 0 8px;
-  margin: 0 2px;
   background: transparent;
   color: #ffffff;
-  border: none;
-  border-radius: 0;
   min-width: 10px;
-  box-shadow: none;
-  text-shadow: none;
 }
 
+#workspaces button.active,
 #workspaces button.focused {
+  background: rgba(76, 120, 153, 0.6);
   color: #ffffff;
-  background: #4c7899;
 }
 
 #workspaces button.urgent {
+  background: rgba(232, 0, 0, 0.6);
   color: #ffffff;
-  background: #4c7899;
+  border: 1px solid rgba(255, 100, 100, 0.8);
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 #clock,
