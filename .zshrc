@@ -115,7 +115,7 @@ bindkey "^[[1;5C" forward-word
 bindkey "^H" backward-kill-word
 
 # tmux sessionizer
-bindkey -s "^f" "zsh ~/.local/scripts/tmux-sessionizer.sh \n"
+bindkey -s "^f" "~/.local/scripts/tmux-sessionizer.sh \n"
 bindkey -s "^t" "tmux new \n"
 bindkey -s "^n" "nmtui \n"
 
@@ -125,6 +125,10 @@ bindkey -s "^n" "nmtui \n"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # pnpm
 export PNPM_HOME="/home/ask-786/.local/share/pnpm"
