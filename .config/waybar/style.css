@@ -12,30 +12,34 @@ window#waybar {
   border-bottom: 1px solid rgba(60, 60, 60, 0.6);
 }
 
-/* WORKSPACES - i3-style blocks */
 #workspaces {
-  padding: 0 2px;
+  padding: 2px 2px;
 }
 
 #workspaces button {
   padding: 0 8px;
-  color: #666;
+  margin: 0 2px;
   background: transparent;
-  border-top: 2px solid transparent;
-  transition: all 0.3s ease;
+  color: #ffffff;
+  border: none;
+  border-radius: 0;
+  min-width: 10px;
+  box-shadow: none;
+  text-shadow: none;
 }
 
 #workspaces button.focused {
-  color: #fff;
-  border-top-color: #4c7899;
+  color: #ffffff;
+  background: #4c7899;
+  border-radius: 4px;
 }
 
 #workspaces button.urgent {
-  color: #ff0000;
-  animation: pulse 1s infinite;
+  color: #ffffff;
+  background: #4c7899;
+  border-radius: 4px;
 }
 
-/* STATUS MODULES */
 #clock,
 #battery,
 #cpu,
@@ -48,42 +52,33 @@ window#waybar {
   margin: 0 2px;
 }
 
-/* CLOCK */
 #clock {
   font-weight: bold;
 }
 
-/* NETWORK - Color-coded states */
 #network {
-  color: #7fdb6a; /* Green = Connected */
+  color: #7fdb6a;
 }
 
 #network.disconnected {
-  color: #ff6b6b; /* Red = Disconnected */
+  color: #ff6b6b;
 }
 
 #network.linked {
-  color: #f1fa8c; /* Yellow = Limited connection */
+  color: #f1fa8c;
 }
 
 #battery.critical:not(.charging) {
-  color: #ff5555; /* Red if below 10% */
-  animation: blink-red 1s infinite; /* Optional: Remove if you don't want blinking */
-}
-
-/* CPU/MEMORY - Color thresholds */
-#cpu {
+  color: #ff5555;
+  animation: blink-red 1s infinite;
 }
 
 #cpu.high {
-  color: #ff9f43; /* Yellow = High usage */
+  color: #ff9f43;
 }
 
 #cpu.very-high {
-  color: #ff5555; /* Red = Critical usage */
-}
-
-#memory {
+  color: #ff5555;
 }
 
 #memory.high {
@@ -94,7 +89,6 @@ window#waybar {
   color: #ff5555;
 }
 
-/* VOLUME */
 #pulseaudio {
   color: #e0e0e0;
 }
@@ -103,25 +97,8 @@ window#waybar {
   color: #ff9f43;
 }
 
-/* SYSTEM TRAY */
-#tray {
-}
-
-/* ANIMATIONS */
 @keyframes blink-red {
   to {
     color: rgba(255, 85, 85, 0.3);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
   }
 }
