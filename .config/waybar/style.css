@@ -31,13 +31,11 @@ window#waybar {
 #workspaces button.focused {
   color: #ffffff;
   background: #4c7899;
-  border-radius: 4px;
 }
 
 #workspaces button.urgent {
   color: #ffffff;
   background: #4c7899;
-  border-radius: 4px;
 }
 
 #clock,
