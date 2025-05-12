@@ -1,6 +1,7 @@
 hide_scroll=true
 show=drun
 width=35%
+height=70%
 lines=10
 line_wrap=word
 term=kitty
@@ -18,3 +19,4 @@ display_generic=false
 location=center
 key_expand=Tab
 insensitive=false
+shrink=false

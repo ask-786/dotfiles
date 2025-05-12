@@ -17,20 +17,22 @@ window#waybar {
 }
 
 #workspaces button {
-  padding: 0 8px;
-  background: transparent;
-  color: #ffffff;
-  min-width: 10px;
+  padding: 0px 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #cccccc;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 2px;
 }
 
 #workspaces button.active,
 #workspaces button.focused {
-  background: rgba(76, 120, 153, 0.6);
+  background: rgba(255, 255, 255, 0.2);
   color: #ffffff;
 }
 
 #workspaces button.urgent {
-  background: rgba(232, 0, 0, 0.6);
+  background: rgba(255, 50, 50, 0.4);
   color: #ffffff;
   border: 1px solid rgba(255, 100, 100, 0.8);
   text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
