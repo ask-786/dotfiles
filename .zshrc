@@ -5,7 +5,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 
 # Path to your flutter installation.
-export PATH="$PATH:/home/ask-786/dev/flutter/bin"
+export PATH="$PATH:/home/ask/dev/flutter/bin"
 
 export PATH="$HOME/.local/scripts:$PATH"
 
@@ -107,7 +107,6 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 alias ..="cd .."
 alias ll="ls -alh --color=auto"
 alias :q="exit"
-alias .="/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME"
 alias tma='tmux a'
 alias open='xdg-open'
 
@@ -122,7 +121,7 @@ bindkey -s "^t" "tmux new \n"
 bindkey -s "^n" "nmtui \n"
 
 # bun completions
-[ -s "/home/ask-786/.bun/_bun" ] && source "/home/ask-786/.bun/_bun"
+[ -s "/home/ask/.bun/_bun" ] && source "/home/ask/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
@@ -133,7 +132,7 @@ export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # pnpm
-export PNPM_HOME="/home/ask-786/.local/share/pnpm"
+export PNPM_HOME="/home/ask/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
