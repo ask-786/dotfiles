@@ -1,0 +1,65 @@
+* {
+  background-color: #1f232b;        // Wofi background
+  border-color:     #4c566a;        // Wofi border
+  highlight-color:  #343b4c;        // Wofi highlight
+  text-color:       #d8dee9;
+  font:             "JetBrainsMono Nerd Font 16";
+}
+
+window {
+  background-color: @background-color;
+  border: 1px;
+  border-color: @border-color;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+mainbox {
+  background-color: transparent;
+}
+
+inputbar {
+  border: 0;
+  border-radius: 10px;
+  padding: 6px 20px 15px 20px;               // tighter padding
+  children: [ prompt, entry ];
+}
+
+prompt {
+  text-color: @highlight-color;
+  margin: 0px 8px 0px 0px;
+}
+
+listview {
+  columns: 1;
+  lines: 10;
+  fixed-height: true;
+  spacing: 4px;
+  scrollbar: false;
+  background-color: @background-color;
+}
+
+element {
+  padding: 10px;
+  background-color: transparent;
+  text-color: @text-color;
+  border-radius: 8px;
+}
+
+element-icon {
+  padding: 0px 12px 0px 0px;
+}
+
+element selected {
+  background-color: #434c5e;
+  text-color: #eceff4;
+  border: 1;                      // removes border stroke
+}
+
+element-icon selected {
+  background-color: #434c5e;
+}
+
+element-text selected {
+  background-color: #434c5e;
+}
