@@ -138,7 +138,11 @@
         "tooltip": false
     },
     "memory": {
-        "format": "{}% "
+        "interval": 2,
+        "format": "{used:0.1f}G {percentage}% ",
+        "tooltip": true,
+        "tooltip-format": "Memory: {used:0.1f}G/{total:0.1f}G ({percentage}%)\nSwap: {swapUsed:0.1f}G/{swapTotal:0.1f}G ({swapPercentage}%)",
+        "on-click": "kitty -e htop"
     },
     "temperature": {
         "critical-threshold": 80,
