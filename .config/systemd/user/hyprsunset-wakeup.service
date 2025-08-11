@@ -4,8 +4,7 @@ After=suspend.target hibernate.target
 
 [Service]
 Type=oneshot
-ExecStart=pkill hyprsunset
-ExecStartPost=hyprsunset &
+ExecStart=/bin/sh -c 'hyprsunset --once && pkill -HUP hyprsunset'
 
 [Install]
 WantedBy=suspend.target hibernate.target
