@@ -138,3 +138,9 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f /home/ask/.dart-cli-completion/zsh-config.zsh ]] && . /home/ask/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+

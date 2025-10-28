@@ -15,9 +15,9 @@
     "modules-right": [
         "network#speed",
         "custom/separator",
-        "mpd",
-        "idle_inhibitor",
-        "custom/separator",
+        // "mpd",
+        // "idle_inhibitor",
+        // "custom/separator",
         "pulseaudio",
         "custom/separator",
         "network",
@@ -32,7 +32,8 @@
         "keyboard-state",
         "custom/separator",
         "battery",
-        "battery#bat2",
+        // "battery#bat2",
+        "custom/totem_battery",
         "custom/separator",
         "clock",
         "tray"
@@ -180,11 +181,11 @@
         "format-plugged": "{capacity}% ",
         "format-alt": "{time} {icon}",
         "format-icons": [
-            "",
-            "",
-            "",
-            "",
-            ""
+            "󰁺",
+            "󰁼",
+            "󰁾",
+            "󰂁",
+            "󰁹"
         ]
     },
     "battery#bat2": {
@@ -231,4 +232,11 @@
         "interval": "once",
         "tooltip": false
     },
+    "custom/totem_battery": {
+        "exec": "~/.config/waybar/scripts/hid_battery.sh",
+        "interval": 60,
+        "return-type": "json",
+        "tooltip": true,
+        "format": "{}"
+    }
 }
