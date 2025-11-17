@@ -107,6 +107,7 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 alias ..="cd .."
 alias ll="ls -alh --color=auto"
 alias :q="exit"
+alias :qa="tmux kill-session"
 alias tma='tmux a'
 alias open='xdg-open'
 
