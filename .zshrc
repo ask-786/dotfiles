@@ -140,8 +140,18 @@ case ":$PATH:" in
 esac
 # pnpm end
 
+# Start ssh-agent if not running
+if [[ -z "$SSH_AUTH_SOCK" ]]; then
+  eval "$(ssh-agent -s)" >/dev/null
+fi
+
+# Add SSH key (silently)
+ssh-add ~/.ssh/id_ed25519 2>/dev/null
+
 ## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
 [[ -f /home/ask/.dart-cli-completion/zsh-config.zsh ]] && . /home/ask/.dart-cli-completion/zsh-config.zsh || true
 ## [/Completion]
 
+export NVM_DIR="$HOME/.nvm"
+source /usr/share/nvm/init-nvm.sh
