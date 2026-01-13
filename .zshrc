@@ -141,12 +141,7 @@ esac
 # pnpm end
 
 # Start ssh-agent if not running
-if [[ -z "$SSH_AUTH_SOCK" ]]; then
-  eval "$(ssh-agent -s)" >/dev/null
-fi
-
-# Add SSH key (silently)
-ssh-add ~/.ssh/id_ed25519 2>/dev/null
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
 ## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
