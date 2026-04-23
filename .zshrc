@@ -148,5 +148,8 @@ export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 [[ -f /home/ask/.dart-cli-completion/zsh-config.zsh ]] && . /home/ask/.dart-cli-completion/zsh-config.zsh || true
 ## [/Completion]
 
+HISTSIZE=10000
+SAVEHIST=10000
+
 export NVM_DIR="$HOME/.nvm"
 source /usr/share/nvm/init-nvm.sh
