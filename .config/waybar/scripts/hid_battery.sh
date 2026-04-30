@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Try to detect any HID battery device (like your ZMK keyboard)
-DEVICE=$(upower -e | grep 'hid_9486EAD61E2C43D6' | head -n 1)
+# Detect HID battery device
+BATTERY_PATH=$(find /sys/class/power_supply -maxdepth 1 -name 'hid-*-battery' | head -n 1)
 
-# If no device found, exit with empty output (Waybar hides module)
-if [ -z "$DEVICE" ]; then
-  echo ""   # or `echo '{}'` if you prefer
+# If no device found
+if [ -z "$BATTERY_PATH" ]; then
+  echo ""
   exit 0
 fi
 
-# Fetch battery percentage
-PERCENT=$(upower -i "$DEVICE" | awk '/percentage:/ {print $2}' | tr -d '%')
+# Read battery percentage
+PERCENT=$(cat "$BATTERY_PATH/capacity" 2>/dev/null)
 
 # If percentage is empty (device disconnected mid-check)
 if [ -z "$PERCENT" ]; then
