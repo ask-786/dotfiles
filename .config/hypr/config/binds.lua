@@ -54,11 +54,15 @@ hl.bind(mainMod .. " + SPACE", function()
 		return
 	end
 
+	local action
+
 	if w.floating ~= true then
-		hl.dsp.focus({ window = "floating" })
+		action = hl.dsp.focus({ window = "floating" })
 	else
-		hl.dsp.focus({ window = "tiled" })
+		action = hl.dsp.focus({ window = "tiled" })
 	end
+
+	hl.dispatch(action)
 end)
 
 -- Example special workspace (scratchpad)
