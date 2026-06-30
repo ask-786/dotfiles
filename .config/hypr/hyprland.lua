@@ -3,7 +3,7 @@
 -- https://wiki.hypr.land/Configuring/Start/
 
 require("config.monitors")
-require("config.auto_start")
+require("config.autostart")
 require("config.env")
 require("config.general_conf")
 require("config.ui")
