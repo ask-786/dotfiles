@@ -29,7 +29,12 @@ hl.bind(
 
 hl.bind(
 	mainMod .. " + SHIFT + E",
-	hl.dsp.exec_cmd([[command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()']])
+	hl.dsp.exec_cmd([[
+		chosen=$(printf "Yes\nNo" | rofi -dmenu -p "Exit Hyprland?") &&
+		[ "$chosen" = "Yes" ] && {
+			command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit
+		}
+	]])
 )
 
 -- Switch workspaces with mainMod + [0-9]
