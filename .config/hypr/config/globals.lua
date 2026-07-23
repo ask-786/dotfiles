@@ -6,7 +6,7 @@
 ---@type Globals
 local M = {
 	terminal = "kitty",
-	fileManager = "thunar",
+	fileManager = "nautilus",
 	menu = "vicinae toggle",
 }
 
