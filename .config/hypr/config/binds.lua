@@ -1,4 +1,5 @@
 local global = require("config.globals")
+local magnifier = require("config.utils.magnifier")
 
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
@@ -79,8 +80,17 @@ hl.bind(mod("S"), hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mod("SHIFT + S"), hl.dsp.window.move({ workspace = "special:magic" }))
 
 -- Scroll through existing workspaces with mainMod + scroll
-hl.bind(mod("mouse_down"), hl.dsp.focus({ workspace = "e+1" }))
-hl.bind(mod("mouse_up"), hl.dsp.focus({ workspace = "e-1" }))
+-- hl.bind(mod("mouse_down"), hl.dsp.focus({ workspace = "e+1" }))
+-- hl.bind(mod("mouse_up"), hl.dsp.focus({ workspace = "e-1" }))
+
+hl.bind("SUPER + Z", magnifier.zoom)
+hl.bind(mod("mouse_down"), function()
+	magnifier.zoom(-0.5)
+end)
+
+hl.bind(mod("mouse_up"), function()
+	magnifier.zoom(0.5)
+end)
 
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mod("mouse:272"), hl.dsp.window.drag(), { mouse = true })

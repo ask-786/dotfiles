@@ -1,29 +1,41 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Detect HID battery device
-BATTERY_PATH=$(find /sys/class/power_supply -maxdepth 1 -name 'hid-*-battery' | head -n 1)
+get_icon() {
+    local percent="$1"
 
-# If no device found
-if [ -z "$BATTERY_PATH" ]; then
-  echo ""
-  exit 0
+    if   (( percent >= 90 )); then echo "󰁹"
+    elif (( percent >= 70 )); then echo "󰂁"
+    elif (( percent >= 40 )); then echo "󰁾"
+    elif (( percent >= 10 )); then echo "󰁼"
+    else echo "󰁺"
+    fi
+}
+
+LEFT="/sys/class/power_supply/hid-9486EAD61E2C43D6-battery-5"
+RIGHT="/sys/class/power_supply/hid-9486EAD61E2C43D6-battery-6"
+
+TEXT="| TOTEM"
+TOOLTIP="TOTEM Keyboard Battery"
+
+if [[ -f "$LEFT/capacity" ]]; then
+    LPERCENT=$(<"$LEFT/capacity")
+    LICON=$(get_icon "$LPERCENT")
+    TEXT+=" L:${LPERCENT}% ${LICON}"
+    TOOLTIP+="\nLeft : ${LPERCENT}%"
 fi
 
-# Read battery percentage
-PERCENT=$(cat "$BATTERY_PATH/capacity" 2>/dev/null)
-
-# If percentage is empty (device disconnected mid-check)
-if [ -z "$PERCENT" ]; then
-  echo ""
-  exit 0
+if [[ -f "$RIGHT/capacity" ]]; then
+    RPERCENT=$(<"$RIGHT/capacity")
+    RICON=$(get_icon "$RPERCENT")
+    TEXT+=" R:${RPERCENT}% ${RICON}"
+    TOOLTIP+="\nRight: ${RPERCENT}%"
 fi
 
-# Select icon based on percentage
-if   [ "$PERCENT" -ge 90 ]; then ICON="󰁹"
-elif [ "$PERCENT" -ge 70 ]; then ICON="󰂁"
-elif [ "$PERCENT" -ge 40 ]; then ICON="󰁾"
-elif [ "$PERCENT" -ge 10 ]; then ICON="󰁼"
-else ICON="󰁺"; fi
+# Hide module if neither half is connected
+if [[ "$TEXT" == "| TOTEM" ]]; then
+    echo ""
+    exit 0
+fi
 
-# Output JSON for Waybar
-echo "{\"text\": \"| TOTEM ${PERCENT}% $ICON\", \"tooltip\": \"TOTEM Keyboard Battery: ${PERCENT}%\"}"
+TOOLTIP="Left: ${LPERCENT}% | Right: ${RPERCENT}%"
+printf '{"text":"%s","tooltip":"%s"}\n' "$TEXT" "$TOOLTIP"
