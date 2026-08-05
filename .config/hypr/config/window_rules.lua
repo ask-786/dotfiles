@@ -34,6 +34,18 @@ hl.window_rule({
 -- })
 -- overlayLayerRule:set_enabled(false)
 
+-- Thunar's file operation progress window should not tile
+hl.window_rule({
+	name = "float-thunar-progress",
+	match = {
+		class = "^thunar$",
+		title = "^(File Operation Progress|.* files\\.\\.\\.)$",
+	},
+
+	float = true,
+	center = true,
+})
+
 -- Hyprland-run windowrule
 hl.window_rule({
 	name = "move-hyprland-run",
