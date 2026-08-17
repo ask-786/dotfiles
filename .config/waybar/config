@@ -233,8 +233,10 @@
         "tooltip": false
     },
     "custom/totem_battery": {
-        "exec": "~/.config/waybar/scripts/hid_battery.sh",
-        "interval": 60,
+        // Resident script: redraws on power_supply udev events (charging,
+        // unplug, re-pair) and falls back to a 60s poll on its own.
+        "exec": "~/.config/waybar/scripts/hid_battery.sh --watch",
+        "restart-interval": 5,
         "return-type": "json",
         "tooltip": true,
         "format": "{}"
