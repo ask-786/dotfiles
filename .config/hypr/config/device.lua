@@ -4,3 +4,8 @@ hl.device({
 	name = "epic-mouse-v1",
 	sensitivity = -0.5,
 })
+
+-- hl.device({
+--     name = "at-translated-set-2-keyboard",
+--     enabled = false,
+-- })
