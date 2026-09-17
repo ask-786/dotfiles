@@ -7,7 +7,7 @@
 local M = {
 	terminal = "kitty",
 	fileManager = "thunar",
-	menu = [[rofi -show combi -combi-modes "drun,window,run" -modes combi -matching fuzzy]],
+	menu = "vicinae toggle",
 }
 
 return M

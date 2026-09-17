@@ -29,13 +29,17 @@ hl.bind(mod("SHIFT + L"), hl.dsp.window.move({ direction = "r" }))
 
 hl.bind(
 	mod("CTRL + C"),
-	hl.dsp.exec_cmd([[sel=$(cliphist list | rofi -dmenu -i); [ -n "$sel" ] && cliphist decode <<< "$sel" | wl-copy]])
+	hl.dsp.exec_cmd([[
+		sel=$(cliphist list | vicinae dmenu --placeholder "Clipboard History") &&
+		[ -n "$sel" ] &&
+		cliphist decode <<< "$sel" | wl-copy
+	]])
 )
 
 hl.bind(
 	mod("SHIFT + E"),
 	hl.dsp.exec_cmd([[
-		chosen=$(printf "Yes\nNo" | rofi -dmenu -p "Exit Hyprland?") &&
+		chosen=$(printf "Yes\nNo\n" | vicinae dmenu --placeholder "Exit Hyprland?") &&
 		[ "$chosen" = "Yes" ] && {
 			command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit
 		}
