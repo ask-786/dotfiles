@@ -29,11 +29,7 @@ hl.bind(mod("SHIFT + L"), hl.dsp.window.move({ direction = "r" }))
 
 hl.bind(
 	mod("CTRL + C"),
-	hl.dsp.exec_cmd([[
-		sel=$(cliphist list | vicinae dmenu --placeholder "Clipboard History") &&
-		[ -n "$sel" ] &&
-		cliphist decode <<< "$sel" | wl-copy
-	]])
+	hl.dsp.exec_cmd("vicinae cmd launch clipboard:history")
 )
 
 hl.bind(
