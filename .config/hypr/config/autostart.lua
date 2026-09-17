@@ -18,10 +18,5 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd([[tmux setenv -g HYPRLAND_INSTANCE_SIGNATURE "$HYPRLAND_INSTANCE_SIGNATURE"]])
 	hl.exec_cmd([[~/.config/hypr/scripts/battery-popup.sh -n -N -m "Battery Low!!" -t "3m"]])
 	hl.exec_cmd("blueberry-tray")
-
 	hl.exec_cmd("vicinae server")
-
-	-- Clipboard manager
-	hl.exec_cmd("wl-paste --type text --watch cliphist -max-items 50 store")
-	hl.exec_cmd("wl-paste --type image --watch cliphist -max-items 50 store")
 end)
