@@ -11,7 +11,7 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("playerctld daemon") -- media keys follow the last active player
 	hl.exec_cmd("hyprpaper")
 	hl.exec_cmd(globals.terminal, { workspace = "9 silent" })
-	hl.exec_cmd("zen-browser", { workspace = "10 silent" })
+	hl.exec_cmd("flatpak run app.zen_browser.zen", { workspace = "10 silent" })
 	hl.exec_cmd("hypridle")
 	hl.exec_cmd("hyprsunset")
 	hl.exec_cmd([[tmux setenv -g HYPRLAND_INSTANCE_SIGNATURE "$HYPRLAND_INSTANCE_SIGNATURE"]])
