@@ -1,2 +1,4 @@
 .config/tmux/plugins/
 .config/fish/fish_variables
+.config/fish/themes/
+.config/systemd/user/graphical-session.target.wants/
