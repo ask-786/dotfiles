@@ -1,0 +1,8 @@
+# PAM configuration file for hyprlock
+# Password first; empty Enter (or wrong password) falls through to face unlock.
+
+auth       required     pam_faillock.so preauth
+auth       [success=done default=ignore]  pam_unix.so nodelay
+auth       optional     pam_exec.so /usr/bin/linux-enable-ir-emitter run --config /home/ask/.config/linux-enable-ir-emitter.toml
+auth       sufficient   pam_howdy.so
+auth       include      login
