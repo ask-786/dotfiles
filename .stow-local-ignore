@@ -21,3 +21,6 @@ _darcs
 ^/README.*
 ^/LICENSE.*
 ^/COPYING
+
+# system files, installed manually (see etc/pam.d)
+^/etc
