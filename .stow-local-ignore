@@ -24,3 +24,4 @@ _darcs
 
 # system files, installed manually (see etc/pam.d)
 ^/etc
+^/docs
