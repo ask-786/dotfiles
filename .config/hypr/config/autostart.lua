@@ -6,7 +6,7 @@ local globals = require("config.globals")
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function()
-	hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
+	hl.exec_cmd("systemctl --user start hyprpolkitagent")
 	-- "quickshell", not "qs": CachyOS ananicy rules renice a process named qs to
 	-- +10 ("Service"), which starves the shell under load. Pin it to -4, the
 	-- same as terminals (and the builds/upgrades they start); RLIMIT_NICE allows it.
