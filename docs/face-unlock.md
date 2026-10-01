@@ -38,6 +38,9 @@ linux-enable-ir-emitter configure
 Point a phone camera at the sensor: phone cameras show IR as a purple/white flash.
 Answer each question from that. The result is saved to
 `~/.config/linux-enable-ir-emitter.toml`, which is tracked in this repo but only applies to this camera.
+**Change the device key in it to the `/dev/v4l/by-path/` path.** `configure` writes a
+`by-id` path, but the RGB and IR cameras share a USB serial, so `by-id/...-index0` can
+point to either camera after a reboot.
 There's no service. PAM switches the emitter on during each login check (see step 6).
 
 ## 4. Configure howdy
