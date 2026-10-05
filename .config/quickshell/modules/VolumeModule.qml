@@ -25,5 +25,5 @@ BarModule {
         else
             Panels.toggle("quick", screenName, "audio");
     }
-    onScrolled: steps => Audio.setVolume(Audio.volume + steps * 0.05)
+    onScrolled: steps => Audio.stepVolume(steps)
 }
