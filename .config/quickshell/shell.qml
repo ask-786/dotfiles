@@ -49,10 +49,6 @@ ShellRoot {
             Panels.toggle(name, Hyprland.focusedMonitor?.name ?? "", target);
         }
 
-        function dbgvol(v: real): void {
-            Audio.setVolume(v);
-        }
-
         function close(): void {
             Panels.close();
         }

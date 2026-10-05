@@ -26,31 +26,7 @@ Singleton {
                                  : bluetooth ? Icons.headset
                                  : Icons.level(Icons.volumeLevels, volume)
 
-    // TEMP: debugging mic level jumping back to 100%. Remove once found.
-    property string _lastCaller: ""
-
-    Connections {
-        target: root.source?.audio ?? null
-
-        function onVolumesChanged() {
-            console.info(`[audio-debug] mic -> ${root.micVolume.toFixed(2)} (last qs call: ${root._lastCaller || "none"}; sink ${root.volume.toFixed(2)}, profile ${root.sink?.properties?.["api.bluez5.profile"] ?? "?"})`);
-            root._lastCaller = "";
-        }
-    }
-
-    Connections {
-        target: Pipewire
-
-        function onDefaultAudioSourceChanged() {
-            console.info(`[audio-debug] default source changed -> ${root.source?.name} id=${root.source?.id}`);
-        }
-        function onDefaultAudioSinkChanged() {
-            console.info(`[audio-debug] default sink changed -> ${root.sink?.name} id=${root.sink?.id}`);
-        }
-    }
-
     function setVolume(v) {
-        _lastCaller = `setVolume(${v.toFixed(2)})`;
         if (!sink?.audio)
             return;
         sink.audio.muted = false;
@@ -63,7 +39,6 @@ Singleton {
     }
 
     function setMicVolume(v) {
-        _lastCaller = `setMicVolume(${v.toFixed(2)})`;
         if (!source?.audio)
             return;
         source.audio.muted = false;
