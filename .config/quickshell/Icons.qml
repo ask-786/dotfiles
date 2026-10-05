@@ -52,6 +52,17 @@ Singleton {
     readonly property string cog: "\u{F0493}"
     readonly property string refresh: "\u{F0450}"
 
+    readonly property string music: "\u{F075A}"
+    readonly property string play: "\u{F040A}"
+    readonly property string pause: "\u{F03E4}"
+    readonly property string previous: "\u{F04AE}"
+    readonly property string next: "\u{F04AD}"
+    readonly property string shuffle: "\u{F049D}"
+    readonly property string shuffleOff: "\u{F049E}"
+    readonly property string repeat: "\u{F0456}"
+    readonly property string repeatOnce: "\u{F0458}"
+    readonly property string repeatOff: "\u{F0457}"
+
     readonly property string chevronRight: "\u{F0142}"
     readonly property string chevronLeft: "\u{F0141}"
     readonly property string check: "\u{F012C}"

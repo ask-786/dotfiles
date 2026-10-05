@@ -32,11 +32,15 @@ ShellRoot {
             CalendarPanel {
                 bar: bar
             }
+
+            MediaPanel {
+                bar: bar
+            }
         }
     }
 
     // For keybinds:
-    //   qs ipc call drawer toggle quick        (or calendar)
+    //   qs ipc call drawer toggle quick        (or calendar, media)
     //   qs ipc call drawer page quick wifi     (wifi | bluetooth | audio)
     IpcHandler {
         target: "drawer"
