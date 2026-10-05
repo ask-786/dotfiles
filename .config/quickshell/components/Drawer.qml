@@ -51,10 +51,13 @@ PanelWindow {
     anchors.left: align === Qt.AlignLeft
     anchors.right: align === Qt.AlignRight
 
-    // Sit on top of the bar without reserving space or pushing windows.
-    exclusionMode: ExclusionMode.Normal
+    // Sit on top of the bar without reserving space or pushing windows. Over
+    // a fullscreen window the bar is hidden, so grow from the screen edge.
+    exclusionMode: bar.fullscreen ? ExclusionMode.Ignore : ExclusionMode.Normal
     exclusiveZone: 0
-    // Overlay keeps it above the ClickCatcher (Top) that closes it. Keyboard
+    // Overlay keeps it above the ClickCatcher (Top) that closes it; over a
+    // fullscreen window both are Overlay and the catcher, mapped no later
+    // than the drawer, stays below. Keyboard
     // focus must stay OnDemand: an Exclusive layer makes Hyprland route all
     // pointer input to exclusive layers only, so outside clicks never land.
     WlrLayershell.layer: WlrLayer.Overlay

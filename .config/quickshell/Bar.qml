@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import qs
 import qs.components
@@ -13,6 +14,9 @@ PanelWindow {
     id: bar
 
     readonly property string screenName: screen?.name ?? ""
+    // A fullscreen window covers the bar; drawers then grow out of the
+    // screen edge instead of the bar's (still reserved) empty zone.
+    readonly property bool fullscreen: Hyprland.monitorFor(screen)?.activeWorkspace?.hasFullscreen ?? false
 
     anchors {
         left: true

@@ -19,9 +19,11 @@ PanelWindow {
         left: true
         right: true
     }
-    exclusionMode: ExclusionMode.Normal
+    exclusionMode: bar.fullscreen ? ExclusionMode.Ignore : ExclusionMode.Normal
     exclusiveZone: 0
-    WlrLayershell.layer: WlrLayer.Top
+    // Fullscreen windows cover the Top layer (and the hidden bar); go above
+    // them and over the bar's zone so outside clicks still land here.
+    WlrLayershell.layer: bar.fullscreen ? WlrLayer.Overlay : WlrLayer.Top
     WlrLayershell.namespace: "quickshell:catcher"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
