@@ -6,13 +6,14 @@ import qs.components
 import qs.services
 
 // Now playing: art, track info, seekable progress, transport controls and a
-// switcher when several players are open.
+// switcher when several players are open. Opens on its own or stacked on
+// top of quick settings / the calendar (shell.qml sets the lift).
 Drawer {
     id: root
 
     name: "media"
-    align: Qt.AlignLeft
-    contentWidth: 380
+    align: Qt.AlignRight
+    contentWidth: 400
 
     readonly property var player: Media.player
 

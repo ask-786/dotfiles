@@ -3,29 +3,41 @@ pragma Singleton
 import QtQuick
 import Quickshell
 
-// Which drawer is open, and on which monitor. Only one at a time.
+// Which drawers are open, and on which monitor. Quick settings and the
+// calendar replace each other; media is independent and stacks on top of
+// whichever of them is open.
 Singleton {
     property string open: "" // "quick" | "calendar" | ""
+    property bool media: false
     property string screen: ""
     property string page: "" // sub-page to open on, e.g. "wifi"
 
+    readonly property bool any: open !== "" || media
+
     // Same button again closes; a different page on an open drawer switches.
+    // Opening on another monitor closes everything on the old one.
     function toggle(name, screenName, target) {
         target = target ?? "";
-        if (open === name && screen === screenName && page === target) {
+        if (screen !== screenName) {
+            close();
+            screen = screenName;
+        }
+        if (name === "media") {
+            media = !media;
+        } else if (open === name && page === target) {
             open = "";
         } else {
-            screen = screenName;
             page = target;
             open = name;
         }
     }
 
     function isOpen(name, screenName) {
-        return open === name && screen === screenName;
+        return screen === screenName && (name === "media" ? media : open === name);
     }
 
     function close() {
         open = "";
+        media = false;
     }
 }

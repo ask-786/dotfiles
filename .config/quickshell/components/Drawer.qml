@@ -14,6 +14,8 @@ PanelWindow {
     required property string name
     property int align: Qt.AlignRight // AlignLeft | AlignHCenter | AlignRight
     property int contentWidth: 400
+    // Raises the body off the bar, e.g. to stack on another open drawer.
+    property real lift: 0
     default property alias content: inner.data
 
     readonly property bool open: Panels.isOpen(name, bar.screenName)
@@ -23,6 +25,8 @@ PanelWindow {
     property real progress: open ? 1 : 0
     property real bodyHeight: targetHeight
     readonly property real h: bodyHeight * progress
+    // Room a drawer stacked on this one has to clear (body plus a gap).
+    readonly property real stackHeight: h + Theme.spacing * progress
 
     Behavior on progress {
         NumberAnimation {
@@ -58,7 +62,8 @@ PanelWindow {
     WlrLayershell.keyboardFocus: open ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
     implicitWidth: contentWidth
-    implicitHeight: Math.min(900, (screen?.height ?? 1080) - Theme.barHeight - 40)
+    // Tall enough for a lifted drawer; the mask keeps the rest click-through.
+    implicitHeight: (screen?.height ?? 1080) - Theme.barHeight
 
     // Only the visible body takes input; the rest of the window is click-through.
     mask: Region {
@@ -67,9 +72,10 @@ PanelWindow {
 
     // Flat panel in the bar's colours; its bottom edge runs under the bar so
     // only the top/left/right border shows and the two read as one piece.
+    // Lifted, the bottom border shows too and it reads as a separate card.
     Rectangle {
         x: body.x
-        y: parent.height - root.h
+        y: body.y
         width: body.width
         height: root.h + 1
         visible: root.h > 0
@@ -83,6 +89,7 @@ PanelWindow {
         id: body
 
         anchors.bottom: parent.bottom
+        anchors.bottomMargin: root.lift
         width: root.contentWidth
         height: root.h
         clip: true

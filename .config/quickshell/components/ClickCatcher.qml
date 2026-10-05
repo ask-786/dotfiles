@@ -10,7 +10,7 @@ PanelWindow {
     required property var bar
 
     screen: bar.screen
-    visible: Panels.open !== "" && Panels.screen === bar.screenName
+    visible: Panels.any && Panels.screen === bar.screenName
     color: "transparent"
 
     anchors {

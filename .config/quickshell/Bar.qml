@@ -8,7 +8,7 @@ import qs.modules
 // Same look as the old waybar, trimmed to the basics. Click a module for
 // details: volume → sound, network → Wi-Fi, bluetooth → devices, battery →
 // quick settings, clock → calendar, menu icon (far right) → quick settings,
-// now playing (left, after workspaces) → media.
+// now playing (first on the right) → media, stacked on any open drawer.
 PanelWindow {
     id: bar
 
@@ -36,19 +36,9 @@ PanelWindow {
             NumberAnimation { target: content; property: "y"; from: 10; to: 0; duration: Theme.slow; easing.type: Easing.OutCubic }
         }
 
-        Row {
+        Workspaces {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Theme.spacing
-
-            Workspaces {
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            MediaModule {
-                anchors.verticalCenter: parent.verticalCenter
-                screenName: bar.screenName
-            }
         }
 
         Row {
@@ -57,6 +47,11 @@ PanelWindow {
             anchors.verticalCenter: parent.verticalCenter
             spacing: Theme.spacing / 2
 
+            MediaModule {
+                id: mediaModule
+                screenName: bar.screenName
+            }
+            Separator { visible: mediaModule.visible }
             VolumeModule { screenName: bar.screenName }
             Separator {}
             NetworkModule { screenName: bar.screenName }

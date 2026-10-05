@@ -26,15 +26,18 @@ ShellRoot {
             }
 
             QuickSettings {
+                id: quick
                 bar: bar
             }
 
             CalendarPanel {
+                id: calendar
                 bar: bar
             }
 
             MediaPanel {
                 bar: bar
+                lift: Math.max(quick.stackHeight, calendar.stackHeight)
             }
         }
     }
