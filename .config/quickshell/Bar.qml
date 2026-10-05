@@ -51,7 +51,12 @@ PanelWindow {
                 id: mediaModule
                 screenName: bar.screenName
             }
-            Separator { visible: mediaModule.visible }
+            Separator { visible: mediaModule.visible && netSpeedModule.visible }
+            NetSpeedModule {
+                id: netSpeedModule
+                screenName: bar.screenName
+            }
+            Separator { visible: mediaModule.visible || netSpeedModule.visible }
             VolumeModule { screenName: bar.screenName }
             Separator {}
             NetworkModule { screenName: bar.screenName }
