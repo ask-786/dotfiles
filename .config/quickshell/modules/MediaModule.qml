@@ -3,15 +3,16 @@ import qs
 import qs.components
 import qs.services
 
-// "▶ Artist - Title" while a player has a track (waybar mpd-style state
-// icon). Click opens the media popup, right-click plays/pauses.
+// Compact "▶ Title" while a player has a track (waybar mpd-style state
+// icon); artist and album are in the tooltip. Click opens the media popup,
+// right-click plays/pauses.
 BarModule {
     id: root
 
     required property string screenName
-    readonly property int maxChars: 45
+    readonly property int maxChars: 22
 
-    readonly property string label: Media.artist ? `${Media.artist} - ${Media.title}` : Media.title
+    readonly property string label: Media.title
 
     visible: Media.hasTrack
     text: `${Media.playing ? "" : ""} ${label.length > maxChars ? label.slice(0, maxChars - 1) + "…" : label}`
