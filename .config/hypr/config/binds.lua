@@ -12,6 +12,7 @@ hl.bind(mod("RETURN"), hl.dsp.exec_cmd(global.terminal))
 hl.bind(mod("Q"), hl.dsp.window.close())
 hl.bind(mod("E"), hl.dsp.exec_cmd(global.fileManager))
 hl.bind(mod("D"), hl.dsp.exec_cmd(global.menu))
+hl.bind(mod("A"), hl.dsp.exec_cmd("qs ipc call drawer toggle quick")) -- quickshell quick settings
 hl.bind(mod("P"), hl.dsp.window.pseudo())
 hl.bind(mod("F"), hl.dsp.window.fullscreen())
 
