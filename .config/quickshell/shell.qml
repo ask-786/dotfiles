@@ -89,4 +89,33 @@ ShellRoot {
             Reminders.remove(id);
         }
     }
+
+    //   qs ipc call prayer toggle                (or on, off)
+    //   qs ipc call prayer times                 (today's, one per line)
+    //   qs ipc call prayer test                  (the next one's alert and adhan, now)
+    IpcHandler {
+        target: "prayer"
+
+        function toggle(): void {
+            Prayer.setEnabled(!Prayer.enabled);
+        }
+
+        function on(): void {
+            Prayer.setEnabled(true);
+        }
+
+        function off(): void {
+            Prayer.setEnabled(false);
+        }
+
+        function times(): string {
+            if (!Prayer.enabled)
+                return "off";
+            return Prayer.timesOn(Prayer.dayKey(new Date())).map(t => `${t.name}\t${Qt.formatTime(new Date(t.at), "hh:mm AP")}`).join("\n");
+        }
+
+        function test(): void {
+            Prayer.test();
+        }
+    }
 }

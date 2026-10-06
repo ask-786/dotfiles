@@ -11,6 +11,10 @@ import qs.services
 // on a new reminder. Presets start a timer in one click; the form builds a
 // labelled timer, a one-off on a day picked in the calendar, or a daily /
 // weekdays / weekly repeat, with pickers that open from compact rows.
+// Today's prayer times sit between the date and the month, with the switch
+// that turns them off and the location they're for (a city search, or a
+// Detect button that guesses from the IP address; either is only used once
+// it's clicked).
 Drawer {
     id: root
 
@@ -32,6 +36,13 @@ Drawer {
     readonly property var repeats: ["daily", "weekdays", "weekly"]
     readonly property var presets: [5, 10, 15, 30, 60] // timer minutes
     readonly property var presetLabels: presets.map(m => m < 60 ? `${m}m` : `${m / 60}h`)
+
+    readonly property string todayKey: Prayer.dayKey(clock.date)
+    readonly property var prayers: Prayer.timesOn(todayKey)
+    readonly property var nextPrayer: Prayer.enabled ? Prayer.nextAfter(clock.date.getTime()) : null
+    property bool locating: false // the location search is open
+    property var places: [] // its results
+    property string placesNote: "" // "Searching…", "No matches", ...
 
     readonly property int durationMinutes: timerHours.value * 60 + timerMinutes.value
     readonly property int hour24: hour.value % 12 + (pm ? 12 : 0)
@@ -113,6 +124,38 @@ Drawer {
         closeForm();
     }
 
+    function openLocating() {
+        locating = true;
+        places = [];
+        placesNote = "";
+        placeQuery.text = "";
+        Qt.callLater(() => placeQuery.forceActiveFocus());
+    }
+
+    function findPlaces() {
+        const q = placeQuery.text.trim();
+        if (q.length < 2) {
+            places = [];
+            placesNote = "";
+            return;
+        }
+        placesNote = "Searching…";
+        Prayer.search(q, list => {
+            if (q !== placeQuery.text.trim())
+                return; // typed on meanwhile
+            places = list ?? [];
+            placesNote = list === null ? "Couldn't reach the search" : list.length ? "" : "No matches";
+        });
+    }
+
+    function detectPlace() {
+        placesNote = "Detecting…";
+        Prayer.detect(p => {
+            places = p ? [p] : [];
+            placesNote = p ? "Guessed from your IP address, so check the town" : "Couldn't detect it";
+        });
+    }
+
     function dayLabel(d) {
         const today = new Date(clock.date.getFullYear(), clock.date.getMonth(), clock.date.getDate());
         const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - today) / 86400000);
@@ -134,6 +177,7 @@ Drawer {
         } else {
             calendar.monthOffset = 0;
             closeForm();
+            locating = false;
         }
     }
     onKindChanged: picking = ""
@@ -719,6 +763,232 @@ Drawer {
         }
 
         Item { width: 1; height: 10 }
+
+        // ------------------------------------------------- prayer times
+        Rectangle {
+            width: parent.width
+            height: prayerContent.implicitHeight + 16
+            radius: Theme.radius
+            color: Theme.surface
+
+            Column {
+                id: prayerContent
+
+                x: 12
+                y: 8
+                width: parent.width - 24
+                spacing: 8
+
+                Item {
+                    width: parent.width
+                    height: 24
+
+                    Icon {
+                        id: prayerIcon
+
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Icons.mosque
+                        size: 16
+                        color: Prayer.enabled ? Theme.accent : Theme.fgMuted
+                    }
+
+                    StyledText {
+                        anchors.left: prayerIcon.right
+                        anchors.leftMargin: 10
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: root.nextPrayer ? `${root.nextPrayer.name} in ${Reminders.countdown(root.nextPrayer.at - clock.date.getTime())}` : "Prayer times"
+                        color: Theme.fgDim
+                    }
+
+                    StyledText {
+                        anchors.right: prayerSwitch.left
+                        anchors.rightMargin: 10
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: !root.nextPrayer
+                        text: !Prayer.enabled ? "Off" : !Prayer.location ? "" : Prayer.failed ? "Offline, retrying" : "Loading…"
+                        color: Theme.fgMuted
+                        font.pixelSize: Theme.fontSize - 1
+                    }
+
+                    StyledSwitch {
+                        id: prayerSwitch
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: Prayer.enabled
+                        onToggled: {
+                            root.locating = false;
+                            Prayer.setEnabled(!checked);
+                        }
+                    }
+                }
+
+                // Passed ones dimmed, the next one in green.
+                Row {
+                    width: parent.width
+                    visible: Prayer.enabled && root.prayers.length > 0
+
+                    Repeater {
+                        model: root.prayers
+
+                        Column {
+                            id: prayer
+
+                            required property var modelData
+                            readonly property bool isNext: modelData.at === root.nextPrayer?.at
+                            readonly property bool passed: modelData.at <= clock.date.getTime()
+
+                            width: parent.width / 5
+                            spacing: 2
+
+                            StyledText {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: prayer.modelData.name
+                                color: prayer.isNext ? Theme.accent : Theme.fgMuted
+                                font.pixelSize: Theme.fontSize - 2
+                            }
+
+                            StyledText {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: Qt.formatTime(new Date(prayer.modelData.at), "h:mm AP").replace(/ [AP]M$/i, "") // the order says which
+                                color: prayer.isNext ? Theme.accent : prayer.passed ? Theme.fgMuted : Theme.fg
+                                font.bold: prayer.isNext
+                            }
+                        }
+                    }
+                }
+
+                // Where the times are for; click to change it.
+                Item {
+                    width: parent.width
+                    height: 22
+                    visible: Prayer.enabled && !root.locating
+
+                    Icon {
+                        id: pinIcon
+
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Icons.mapMarker
+                        size: 14
+                        color: Prayer.location ? Theme.fgMuted : Theme.orange
+                    }
+
+                    StyledText {
+                        anchors.left: pinIcon.right
+                        anchors.leftMargin: 10
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Prayer.location ? [Prayer.location.name, Prayer.location.detail].filter(x => x).join(", ") : "Set your location"
+                        color: Prayer.location ? Theme.fgMuted : Theme.orange
+                        font.pixelSize: Theme.fontSize - 2
+                        elide: Text.ElideRight
+                    }
+
+                    StateLayer {
+                        onClicked: root.openLocating()
+                    }
+                }
+
+                // The location search.
+                Column {
+                    width: parent.width
+                    spacing: 6
+                    visible: Prayer.enabled && root.locating
+
+                    Rectangle {
+                        width: parent.width
+                        height: 36
+                        radius: Theme.radius
+                        color: Theme.surfaceHigh
+
+                        Icon {
+                            id: searchIcon
+
+                            x: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: Icons.magnify
+                            size: 16
+                            color: Theme.fgDim
+                        }
+
+                        TextInput {
+                            id: placeQuery
+
+                            anchors.left: searchIcon.right
+                            anchors.leftMargin: 10
+                            anchors.right: parent.right
+                            anchors.rightMargin: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: Theme.fg
+                            selectionColor: Theme.primary
+                            font.family: Theme.font
+                            font.pixelSize: Theme.fontSize
+                            clip: true
+                            onTextChanged: searchDelay.restart()
+                            onAccepted: root.findPlaces()
+
+                            StyledText {
+                                width: parent.width
+                                visible: placeQuery.text === ""
+                                text: "Search a city…"
+                                color: Theme.fgMuted
+                            }
+                        }
+
+                        // Searches once typing pauses.
+                        Timer {
+                            id: searchDelay
+                            interval: 400
+                            onTriggered: root.findPlaces()
+                        }
+                    }
+
+                    Repeater {
+                        model: root.places
+
+                        ListItem {
+                            required property var modelData
+
+                            width: parent.width
+                            icon: Icons.mapMarker
+                            title: modelData.name
+                            subtitle: [modelData.detail, `${modelData.latitude.toFixed(2)}, ${modelData.longitude.toFixed(2)}`].filter(x => x).join(" · ")
+                            onClicked: {
+                                Prayer.setLocation(modelData);
+                                root.locating = false;
+                            }
+                        }
+                    }
+
+                    StyledText {
+                        x: 4
+                        width: parent.width - 8
+                        visible: text !== ""
+                        text: root.placesNote
+                        color: Theme.fgMuted
+                        font.pixelSize: Theme.fontSize - 1
+                        wrapMode: Text.Wrap
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        spacing: 6
+
+                        TextButton {
+                            icon: Icons.crosshairs
+                            text: "Detect"
+                            onClicked: root.detectPlace()
+                        }
+                        TextButton {
+                            text: "Cancel"
+                            onClicked: root.locating = false
+                        }
+                    }
+                }
+            }
+        }
+
+        Item { width: 1; height: 6 }
 
         Calendar {
             id: calendar

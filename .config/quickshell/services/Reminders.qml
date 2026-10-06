@@ -78,9 +78,23 @@ Singleton {
             _save();
     }
 
+    // An alert from another service (prayer times), which plays its own sound.
+    function raise(entry) {
+        alerts = alerts.concat([Object.assign({ key: _newId(), missed: false }, entry)]);
+        _save();
+    }
+
+    function dismissWhere(test) {
+        if (!alerts.some(test))
+            return;
+        alerts = alerts.filter(a => !test(a));
+        _save();
+    }
+
     // Second line of an alert.
     function alertText(a) {
-        return a.missed ? `Missed, was due ${formatDue(a.due)}`
+        return a.prayer ? `Adhan · ${Qt.formatTime(new Date(a.due), "hh:mm AP")}`
+             : a.missed ? `Missed, was due ${formatDue(a.due)}`
              : a.duration ? `${countdown(a.duration)} timer is up`
              : describe(a);
     }

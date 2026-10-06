@@ -7,7 +7,7 @@ import qs.components
 import qs.services
 
 // Popups, top right: fired reminders (with Snooze / Done, until dealt with)
-// and then notifications, newest first in each. Over fullscreen windows too,
+// and prayer times (Stop for the adhan, Done), then notifications, newest first in each. Over fullscreen windows too,
 // on the focused monitor.
 PanelWindow {
     id: root
@@ -65,7 +65,7 @@ PanelWindow {
 
                     x: Theme.padding
                     y: Theme.padding
-                    text: card.modelData.duration ? Icons.timer : Icons.alarm
+                    text: card.modelData.prayer ? Icons.mosque : card.modelData.duration ? Icons.timer : Icons.alarm
                     size: 22
                     color: card.modelData.missed ? Theme.orange : Theme.accent
                 }
@@ -102,15 +102,26 @@ PanelWindow {
                         spacing: 6
 
                         TextButton {
+                            visible: !card.modelData.prayer
                             icon: Icons.sleep
                             text: `Snooze ${Reminders.snoozeMinutes} min`
                             onClicked: Reminders.snoozeAlert(card.modelData.key)
                         }
                         TextButton {
+                            visible: !!card.modelData.prayer && Prayer.playing
+                            icon: Icons.volumeOff
+                            text: "Stop"
+                            onClicked: Prayer.stop()
+                        }
+                        TextButton {
                             icon: Icons.check
                             text: "Done"
                             fg: Theme.accent
-                            onClicked: Reminders.dismiss(card.modelData.key)
+                            onClicked: {
+                                if (card.modelData.prayer)
+                                    Prayer.stop();
+                                Reminders.dismiss(card.modelData.key);
+                            }
                         }
                     }
                 }
