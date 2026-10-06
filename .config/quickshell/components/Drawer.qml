@@ -100,12 +100,14 @@ PanelWindow {
 
         Keys.onEscapePressed: Panels.close()
 
-        // Pinned to the top edge, so content rides up out of the bar.
+        // Opening, pinned to the top edge, so content rides up out of the
+        // bar. Resizing while open, pinned to the bottom, so what's next to
+        // the bar stands still and only the top edge moves.
         Column {
             id: inner
 
             x: Theme.padding
-            y: Theme.padding
+            y: Theme.padding + (root.bodyHeight - root.targetHeight) * root.progress
             width: parent.width - 2 * Theme.padding
             opacity: Math.min(1, root.progress * 1.5)
         }
