@@ -15,7 +15,10 @@ Singleton {
     readonly property color bg: Qt.rgba(23 / 255, 25 / 255, 30 / 255, 0.95)
     readonly property color panelBg: Qt.rgba(23 / 255, 25 / 255, 30 / 255, 0.98)
     readonly property color border: Qt.rgba(60 / 255, 60 / 255, 60 / 255, 0.6)
-    readonly property color outline: border
+    // Outer edge of drawers, tooltips and dunst popups; brighter than
+    // `border` so they stand out against dark wallpapers and windows.
+    readonly property color panelBorder: Qt.rgba(1, 1, 1, 0.25)
+    readonly property color outline: panelBorder
 
     // Button-ish surfaces, like `#workspaces button`
     readonly property color surface: Qt.rgba(1, 1, 1, 0.05)

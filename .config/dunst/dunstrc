@@ -95,7 +95,8 @@
     frame_width = 1
 
     # Defines color of the frame around the notification window.
-    frame_color = "#3c3c3c99"
+    # Matches Quickshell Theme.panelBorder.
+    frame_color = "#ffffff40"
 
     # Size of gap to display between notifications - requires a compositor.
     # If value is greater than 0, separator_height will be ignored and a border

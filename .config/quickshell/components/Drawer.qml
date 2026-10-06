@@ -84,7 +84,7 @@ PanelWindow {
         visible: root.h > 0
         color: Theme.panelBg
         border.width: 1
-        border.color: Theme.border
+        border.color: Theme.panelBorder
         radius: Theme.radius
     }
 
