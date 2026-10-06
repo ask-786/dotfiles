@@ -130,7 +130,33 @@ Drawer {
                 }
             }
 
+            // Small clock, handy while the bar is hidden over fullscreen windows.
+            SystemClock {
+                id: clock
+                precision: SystemClock.Minutes
+            }
+
+            Column {
+                anchors.right: headerButtons.left
+                anchors.rightMargin: 12
+                anchors.verticalCenter: parent.verticalCenter
+
+                StyledText {
+                    anchors.right: parent.right
+                    text: Qt.formatTime(clock.date, "hh:mm AP")
+                    font.bold: true
+                }
+                StyledText {
+                    anchors.right: parent.right
+                    text: Qt.formatDate(clock.date, "ddd, MMM d")
+                    color: Theme.fgDim
+                    font.pixelSize: Theme.fontSize - 2
+                }
+            }
+
             Row {
+                id: headerButtons
+
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 8
