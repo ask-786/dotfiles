@@ -7,7 +7,8 @@ import Quickshell.Io
 // Prayer times from AlAdhan (api.aladhan.com, free, no key), fetched a month
 // at a time and cached in ~/.local/state, so they keep working offline. At
 // each of the five prayers an alert pops up (next to the reminders' alerts,
-// see Popups.qml) and the adhan plays. The location is picked in the
+// see Popups.qml) and the adhan plays, unless the sound is turned off for
+// just the popup. The location is picked in the
 // calendar drawer (a city search, or a guess from the IP address) and saved
 // with the cache; the switch there turns all of it off, fetching included.
 Singleton {
@@ -23,6 +24,8 @@ Singleton {
     // Minutes added to a prayer to match a local timetable, e.g. ({ Isha: 2 }).
     readonly property var offsets: ({})
     readonly property string sound: `${Quickshell.env("HOME")}/.local/share/sounds/adhan.mp3`
+    // Downloaded to `sound` when that's missing (a fresh install).
+    readonly property string soundUrl: "https://cdn.aladhan.com/audio/adhans/a1.mp3"
     // Played for Fajr instead, when set (an adhan with "as-salatu khayrun
     // min an-nawm").
     readonly property string fajrSound: ""
@@ -32,6 +35,7 @@ Singleton {
     readonly property var names: ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
 
     property bool enabled: true
+    property bool playAdhan: true
     // { name, detail, latitude, longitude }, or null until one is picked.
     property var location: null
     // Cached days, "2026-10-06": { Fajr: ms, ... } (before offsets).
@@ -52,6 +56,7 @@ Singleton {
     property real _checked: Date.now() // prayers up to here are dealt with
     property real _failedAt: 0
     property var _loading: [] // being fetched, "<_source>|2026-10"
+    property real _soundCheckedAt: 0
 
     // -------------------------------------------------------------- reading
 
@@ -82,10 +87,20 @@ Singleton {
         enabled = on;
         _checked = Date.now();
         _failedAt = 0;
+        _soundCheckedAt = 0;
         if (!on) {
             stop();
             Reminders.dismissWhere(a => a.prayer);
         }
+        _save();
+        _tick();
+    }
+
+    function setPlayAdhan(on) {
+        playAdhan = on;
+        _soundCheckedAt = 0;
+        if (!on)
+            stop();
         _save();
         _tick();
     }
@@ -172,6 +187,8 @@ Singleton {
             _fire(last);
 
         _fetchMissing(now);
+        if (playAdhan)
+            _fetchSound(now);
         // Poll at least every 30 s: timers don't count time spent suspended.
         const next = nextAfter(now);
         timer.interval = next ? Math.max(50, Math.min(next.at - now, 30000)) : 30000;
@@ -181,6 +198,8 @@ Singleton {
     function _fire(t) {
         Reminders.dismissWhere(a => a.prayer);
         Reminders.raise({ text: t.name, due: t.at, prayer: true });
+        if (!playAdhan)
+            return;
         // Falls back to a chime if the adhan file is missing.
         player.exec(["sh", "-c", 'f=$1; [ -r "$f" ] || f=/usr/share/sounds/freedesktop/stereo/complete.oga; exec pw-play "$f"',
             "adhan", t.name === "Fajr" && fajrSound ? fajrSound : sound]);
@@ -197,6 +216,16 @@ Singleton {
             if (!days[dayKey(day)])
                 _fetch(day.getFullYear(), day.getMonth() + 1);
         }
+    }
+
+    // Checked every few minutes rather than once: the file can go missing
+    // later, and this object outlives config reloads that don't touch it.
+    function _fetchSound(now) {
+        if (soundGet.running || now - _soundCheckedAt < retryMs)
+            return;
+        _soundCheckedAt = now;
+        soundGet.exec(["sh", "-c", 'f=$1; [ -s "$f" ] && exit 0; mkdir -p "${f%/*}" && curl -sfL --max-time 300 -o "$f.part" "$2" && mv "$f.part" "$f" || { rm -f "$f.part"; exit 1; }',
+            "adhan", sound, soundUrl]);
     }
 
     function _fetch(year, month) {
@@ -250,13 +279,14 @@ Singleton {
     // ------------------------------------------------------------ storage
 
     function _save() {
-        file.setText(JSON.stringify({ enabled, location, source: _source, days }) + "\n");
+        file.setText(JSON.stringify({ enabled, playAdhan, location, source: _source, days }) + "\n");
     }
 
     function _load(text) {
         try {
             const data = JSON.parse(text);
             enabled = data.enabled !== false;
+            playAdhan = data.playAdhan !== false;
             const l = data.location;
             if (l && typeof l.name === "string" && typeof l.latitude === "number" && typeof l.longitude === "number")
                 location = l;
@@ -290,5 +320,13 @@ Singleton {
 
     Process {
         id: player
+    }
+
+    Process {
+        id: soundGet
+        onExited: code => {
+            if (code !== 0)
+                console.warn(`Prayer: can't download the adhan from ${root.soundUrl}`);
+        }
     }
 }

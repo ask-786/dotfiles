@@ -801,13 +801,27 @@ Drawer {
                     }
 
                     StyledText {
-                        anchors.right: prayerSwitch.left
+                        anchors.right: adhanButton.visible ? adhanButton.left : prayerSwitch.left
                         anchors.rightMargin: 10
                         anchors.verticalCenter: parent.verticalCenter
                         visible: !root.nextPrayer
                         text: !Prayer.enabled ? "Off" : !Prayer.location ? "" : Prayer.failed ? "Offline, retrying" : "Loading…"
                         color: Theme.fgMuted
                         font.pixelSize: Theme.fontSize - 1
+                    }
+
+                    // The adhan, or just the popup.
+                    IconButton {
+                        id: adhanButton
+
+                        anchors.right: prayerSwitch.left
+                        anchors.rightMargin: 6
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: Prayer.enabled
+                        size: 26
+                        icon: Prayer.playAdhan ? Icons.volumeLevels[2] : Icons.volumeOff
+                        idleColor: "transparent"
+                        onClicked: Prayer.setPlayAdhan(!Prayer.playAdhan)
                     }
 
                     StyledSwitch {

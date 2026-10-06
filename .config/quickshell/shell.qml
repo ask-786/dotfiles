@@ -91,6 +91,7 @@ ShellRoot {
     }
 
     //   qs ipc call prayer toggle                (or on, off)
+    //   qs ipc call prayer toggleSound           (the adhan, or just the popup)
     //   qs ipc call prayer times                 (today's, one per line)
     //   qs ipc call prayer test                  (the next one's alert and adhan, now)
     IpcHandler {
@@ -106,6 +107,10 @@ ShellRoot {
 
         function off(): void {
             Prayer.setEnabled(false);
+        }
+
+        function toggleSound(): void {
+            Prayer.setPlayAdhan(!Prayer.playAdhan);
         }
 
         function times(): string {
