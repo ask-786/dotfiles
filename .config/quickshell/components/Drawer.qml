@@ -50,6 +50,8 @@ PanelWindow {
     anchors.bottom: true
     anchors.left: align === Qt.AlignLeft
     anchors.right: align === Qt.AlignRight
+    margins.left: align === Qt.AlignLeft ? Theme.drawerGap : 0
+    margins.right: align === Qt.AlignRight ? Theme.drawerGap : 0
 
     // Sit on top of the bar without reserving space or pushing windows. Over
     // a fullscreen window the bar is hidden, so grow from the screen edge.
@@ -73,14 +75,12 @@ PanelWindow {
         item: body
     }
 
-    // Flat panel in the bar's colours; its bottom edge runs under the bar so
-    // only the top/left/right border shows and the two read as one piece.
-    // Lifted, the bottom border shows too and it reads as a separate card.
+    // Flat panel in the bar's colours, a small gap off the bar.
     Rectangle {
         x: body.x
         y: body.y
         width: body.width
-        height: root.h + 1
+        height: root.h
         visible: root.h > 0
         color: Theme.panelBg
         border.width: 1
@@ -92,7 +92,7 @@ PanelWindow {
         id: body
 
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: root.lift
+        anchors.bottomMargin: root.lift + Theme.drawerGap
         width: root.contentWidth
         height: root.h
         clip: true

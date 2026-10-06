@@ -50,6 +50,7 @@ Singleton {
     readonly property int radius: 3
     readonly property int spacing: 8
     readonly property int padding: 12
+    readonly property int drawerGap: 4 // drawers off the bar and the screen edge
 
     // Motion (ms) and M3 "emphasized" curves
     readonly property int fast: 150
