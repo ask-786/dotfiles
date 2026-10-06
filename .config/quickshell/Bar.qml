@@ -76,6 +76,11 @@ PanelWindow {
             }
             Separator { visible: totemModule.visible }
             TotemModule { id: totemModule }
+            Separator { visible: reminderModule.visible }
+            ReminderModule {
+                id: reminderModule
+                screenName: bar.screenName
+            }
             Separator {}
             ClockModule { screenName: bar.screenName }
 
@@ -85,6 +90,7 @@ PanelWindow {
                 rightPadding: 6
             }
 
+            NotificationModule { screenName: bar.screenName }
             MenuModule { screenName: bar.screenName }
         }
     }

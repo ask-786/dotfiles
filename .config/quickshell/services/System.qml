@@ -6,12 +6,12 @@ import Quickshell.Io
 import Quickshell.Services.UPower
 
 // Small toggles backed by external tools: night light (hyprsunset),
-// do-not-disturb (dunst), caffeine (systemd idle inhibitor), power profile.
+// do-not-disturb (Notifs), caffeine (systemd idle inhibitor), power profile.
 Singleton {
     id: root
 
     property bool nightLight: false
-    property bool dnd: false
+    readonly property bool dnd: Notifs.dnd
     property bool caffeine: false
 
     readonly property int nightTemperature: 4500
@@ -35,8 +35,7 @@ Singleton {
     }
 
     function toggleDnd() {
-        run(["dunstctl", "set-paused", "toggle"]);
-        dnd = !dnd;
+        Notifs.dnd = !Notifs.dnd;
     }
 
     function run(cmd) {
@@ -46,7 +45,6 @@ Singleton {
 
     function refresh() {
         sunsetProc.running = true;
-        dndProc.running = true;
     }
 
     Component.onCompleted: refresh()
@@ -73,14 +71,6 @@ Singleton {
                 if (!isNaN(t))
                     root.nightLight = t < 6000;
             }
-        }
-    }
-
-    Process {
-        id: dndProc
-        command: ["dunstctl", "is-paused"]
-        stdout: StdioCollector {
-            onStreamFinished: root.dnd = text.trim() === "true"
         }
     }
 

@@ -37,9 +37,9 @@ Singleton {
                                  : low ? Icons.batteryAlert
                                  : Icons.level(Icons.batteryLevels, fraction)
 
-    // Low-battery notifications through dunst, which draws over fullscreen
-    // windows where the bar (and its blink) is hidden. Each threshold fires
-    // once per discharge; plugging in resets it and closes the popup.
+    // Low-battery notifications, which (unlike the bar and its blink) show
+    // over fullscreen windows. Each threshold fires once per discharge;
+    // plugging in resets it and closes the popup.
     readonly property var _warnings: [
         { at: 5, urgency: "critical", title: "Battery critical", hint: "plug in now", sound: "dialog-error" },
         { at: 15, urgency: "normal", title: "Battery low", hint: "", sound: "dialog-warning" }
@@ -58,7 +58,9 @@ Singleton {
         if (plugged) {
             _warned = 101;
             if (_notifId)
-                Quickshell.execDetached(["dunstctl", "close", _notifId]);
+                Quickshell.execDetached(["gdbus", "call", "--session", "--dest", "org.freedesktop.Notifications",
+                    "--object-path", "/org/freedesktop/Notifications",
+                    "--method", "org.freedesktop.Notifications.CloseNotification", _notifId]);
             _notifId = "";
             return;
         }

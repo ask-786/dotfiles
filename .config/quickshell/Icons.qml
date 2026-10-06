@@ -33,6 +33,10 @@ Singleton {
     readonly property string night: "\u{F0594}"
     readonly property string bell: "\u{F009A}"
     readonly property string bellOff: "\u{F009B}"
+    readonly property string bellRing: "\u{F009E}"
+    readonly property string bellPlus: "\u{F009D}"
+    readonly property string bellOutline: "\u{F009C}"
+    readonly property string alarm: "\u{F0020}"
     readonly property string coffee: "\u{F0176}"
     readonly property string leaf: "\u{F032A}"
     readonly property string balance: "\u{F05D1}"
@@ -65,6 +69,12 @@ Singleton {
 
     readonly property string chevronRight: "\u{F0142}"
     readonly property string chevronLeft: "\u{F0141}"
+    readonly property string chevronUp: "\u{F0143}"
+    readonly property string chevronDown: "\u{F0140}"
+    readonly property string plus: "\u{F0415}"
+    readonly property string timer: "\u{F051B}"
+    readonly property string calendar: "\u{F00F6}"
+    readonly property string clock: "\u{F0150}"
     readonly property string check: "\u{F012C}"
     readonly property string close: "\u{F0156}"
 

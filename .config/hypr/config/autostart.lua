@@ -7,7 +7,6 @@ local globals = require("config.globals")
 --
 hl.on("hyprland.start", function()
 	hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
-	hl.exec_cmd("dunst")
 	hl.exec_cmd("qs")
 	hl.exec_cmd("playerctld daemon") -- media keys follow the last active player
 	hl.exec_cmd("hyprpaper")

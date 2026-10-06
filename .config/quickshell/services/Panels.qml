@@ -3,11 +3,11 @@ pragma Singleton
 import QtQuick
 import Quickshell
 
-// Which drawers are open, and on which monitor. Quick settings and the
-// calendar replace each other; media is independent and stacks on top of
-// whichever of them is open.
+// Which drawers are open, and on which monitor. Quick settings, the
+// calendar and notifications replace each other; media is independent and
+// stacks on top of whichever of them is open.
 Singleton {
-    property string open: "" // "quick" | "calendar" | ""
+    property string open: "" // "quick" | "calendar" | "notifications" | ""
     property bool media: false
     property string screen: ""
     property string page: "" // sub-page to open on, e.g. "wifi"
