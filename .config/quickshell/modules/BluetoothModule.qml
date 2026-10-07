@@ -10,9 +10,12 @@ BarModule {
     required property string screenName
     readonly property var device: Bt.connected[0] ?? null
     readonly property int battery: Bt.battery(device)
+    // Red when any connected device is low, not just the one named here.
+    readonly property bool low: Bt.connected.some(d => Bt.isLow(d))
 
     visible: device !== null
     text: device ? ` ${device.name}${battery >= 0 ? ` ${battery}%` : ""}${Bt.connected.length > 1 ? ` +${Bt.connected.length - 1}` : ""}` : ""
+    textColor: low ? Theme.red : Theme.fg
     active: Panels.isOpen("quick", screenName) && Panels.page === "bluetooth"
 
     onClicked: Panels.toggle("quick", screenName, "bluetooth")
