@@ -163,7 +163,7 @@ Drawer {
 
                 // Devices panel (per-bud battery and the like), also SUPER+B
                 IconButton {
-                    icon: Icons.headphones
+                    icon: Icons.devices
                     active: Panels.isOpen("devices", root.bar.screenName)
                     onClicked: Panels.toggle("devices", root.bar.screenName)
                 }

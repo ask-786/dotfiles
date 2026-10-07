@@ -52,6 +52,7 @@ Singleton {
     readonly property string down: "\u{F19B3}"
     readonly property string up: "\u{F19B2}"
     readonly property string keyboard: "\u{F030C}"
+    readonly property string devices: "\u{F0FB0}"
 
     readonly property string power: "\u{F0425}"
     readonly property string restart: "\u{F0709}"
