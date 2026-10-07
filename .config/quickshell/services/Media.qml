@@ -47,6 +47,27 @@ Singleton {
     readonly property string artist: player?.trackArtist ?? ""
     readonly property bool playing: player?.isPlaying ?? false
 
+    // Track length in seconds, 0 if unknown. Firefox re-sends the metadata
+    // without mpris:length right after a seek (and often while paused), which
+    // would hide the progress bar, so keep the last length seen for the track.
+    property real length: 0
+    property string _lengthKey: ""
+    readonly property string _trackKey: player ? `${player.dbusName}|${player.trackTitle}|${player.trackArtist}` : ""
+    readonly property real _reportedLength: player?.lengthSupported ? player.length : 0
+
+    function _rememberLength() {
+        if (_trackKey !== _lengthKey) {
+            _lengthKey = _trackKey;
+            length = 0;
+        }
+        if (_reportedLength > 0)
+            length = _reportedLength;
+    }
+
+    on_TrackKeyChanged: _rememberLength()
+    on_ReportedLengthChanged: _rememberLength()
+    Component.onCompleted: _rememberLength()
+
     function pick(p) {
         _picked = p;
         _lastActive = p;

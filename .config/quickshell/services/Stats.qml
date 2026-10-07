@@ -48,11 +48,13 @@ Singleton {
     property string _backlightDir: ""
     property int _brightnessMax: 0
 
-    // Matches waybar's {bandwidthDownBytes}: SI units, one decimal.
+    // Matches waybar's {bandwidthDownBytes}: SI units, one decimal. At most
+    // 9 characters ("999.9kB/s"): 999.95 and up would round to "1000.0", so
+    // move to the next unit there.
     function formatRate(bytes) {
         const units = ["B", "kB", "MB", "GB"];
         let i = 0;
-        while (bytes >= 1000 && i < units.length - 1) {
+        while (bytes >= 999.95 && i < units.length - 1) {
             bytes /= 1000;
             i++;
         }

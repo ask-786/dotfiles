@@ -113,13 +113,13 @@ Drawer {
         Column {
             width: parent.width
             spacing: 6
-            visible: Media.hasTrack && (root.player?.lengthSupported ?? false) && root.player.length > 0
+            visible: Media.hasTrack && Media.length > 0
 
             Item {
                 id: bar
 
-                readonly property real fraction: root.player && root.player.length > 0
-                    ? Math.min(1, root.player.position / root.player.length) : 0
+                readonly property real fraction: root.player && Media.length > 0
+                    ? Math.min(1, root.player.position / Media.length) : 0
                 readonly property real shown: seek.pressed ? seek.dragFraction : fraction
 
                 width: parent.width
@@ -174,7 +174,7 @@ Drawer {
                         if (pressed)
                             dragFraction = Math.max(0, Math.min(1, event.x / width));
                     }
-                    onReleased: root.player.position = dragFraction * root.player.length
+                    onReleased: root.player.position = dragFraction * Media.length
                 }
             }
 
@@ -183,13 +183,13 @@ Drawer {
                 height: 16
 
                 StyledText {
-                    text: Media.formatTime(seek.pressed ? seek.dragFraction * (root.player?.length ?? 0) : (root.player?.position ?? 0))
+                    text: Media.formatTime(seek.pressed ? seek.dragFraction * Media.length : (root.player?.position ?? 0))
                     color: Theme.fgDim
                     font.pixelSize: Theme.fontSize - 2
                 }
                 StyledText {
                     anchors.right: parent.right
-                    text: Media.formatTime(root.player?.length ?? 0)
+                    text: Media.formatTime(Media.length)
                     color: Theme.fgDim
                     font.pixelSize: Theme.fontSize - 2
                 }
