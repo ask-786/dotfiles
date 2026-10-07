@@ -27,9 +27,10 @@ Singleton {
     }
 
     // Note: hyprsunset's own schedule (hyprsunset.conf) wins at the next
-    // profile boundary.
+    // profile boundary. `identity` alone keeps reporting the old temperature
+    // (refresh would flip the tile back on), so set a neutral one first.
     function toggleNightLight() {
-        run(nightLight ? ["hyprctl", "hyprsunset", "identity"]
+        run(nightLight ? ["sh", "-c", "hyprctl hyprsunset temperature 6500 && hyprctl hyprsunset identity"]
                        : ["hyprctl", "hyprsunset", "temperature", String(nightTemperature)]);
         nightLight = !nightLight;
     }
