@@ -12,7 +12,7 @@ BarModule {
     readonly property var halves: [Totem.left, Totem.right].filter(h => h.present)
     readonly property int lowest: halves.length ? Math.min(...halves.map(h => h.capacity)) : 100
 
-    function short(half) {
+    function halfText(half) {
         if (!half.present)
             return "–";
         return `${half.capacity}${half.status === "Charging" ? "" : ""}`;
@@ -26,7 +26,7 @@ BarModule {
     }
 
     visible: Totem.present
-    text: `${Icons.keyboard} ${short(Totem.left)}/${short(Totem.right)}%`
+    text: `${Icons.keyboard} ${halfText(Totem.left)}/${halfText(Totem.right)}%`
     textColor: lowest < 10 ? Theme.red : lowest < 20 ? Theme.orange : Theme.fg
     blink: lowest < 10
     tooltip: `Totem — ${describe(Totem.left, "Left")} | ${describe(Totem.right, "Right")}`
