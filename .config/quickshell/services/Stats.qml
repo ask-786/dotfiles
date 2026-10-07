@@ -30,6 +30,18 @@ Singleton {
     property int temp: 0 // °C
     property int brightness: 0 // %
 
+    // Only quick settings shows cpu, memory, temperature and brightness, so
+    // poll those just while it's open; the bar needs only the network.
+    readonly property bool detailed: Panels.open === "quick"
+
+    onDetailedChanged: {
+        if (detailed) {
+            _pollDetails();
+        } else {
+            _cpuPrev = null;
+        }
+    }
+
     property var _cpuPrev: null
     property var _netPrev: null
     property string _tempPath: ""
@@ -192,19 +204,24 @@ Singleton {
         }
     }
 
+    function _pollDetails() {
+        statFile.reload();
+        memFile.reload();
+        if (_tempPath)
+            tempFile.reload();
+        if (_backlightDir)
+            brightnessFile.reload();
+    }
+
     Timer {
         interval: 1000
         running: true
         repeat: true
         onTriggered: {
-            statFile.reload();
-            memFile.reload();
             routeFile.reload();
             netDevFile.reload();
-            if (root._tempPath)
-                tempFile.reload();
-            if (root._backlightDir)
-                brightnessFile.reload();
+            if (root.detailed)
+                root._pollDetails();
         }
     }
 

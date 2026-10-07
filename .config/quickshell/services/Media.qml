@@ -78,11 +78,14 @@ Singleton {
         }
     }
 
-    // MPRIS doesn't push position updates; poll while playing.
+    // MPRIS doesn't push position updates; poll, but only while the media
+    // panel (the only thing showing position) is open, or its progress bar
+    // animates nonstop behind the closed drawer.
     Timer {
         interval: 1000
         repeat: true
-        running: root.playing
+        triggeredOnStart: true
+        running: root.hasTrack && Panels.media
         onTriggered: root.player?.positionChanged()
     }
 }

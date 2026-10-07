@@ -47,11 +47,16 @@ Singleton {
         sunsetProc.running = true;
     }
 
+    // Only the quick settings tile shows night light: check on open, then
+    // keep in sync only while it stays open.
+    readonly property bool watching: Panels.open === "quick"
+
+    onWatchingChanged: if (watching) refresh()
     Component.onCompleted: refresh()
 
     Timer {
         interval: 10000
-        running: true
+        running: root.watching
         repeat: true
         onTriggered: root.refresh()
     }
