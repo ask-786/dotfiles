@@ -62,14 +62,6 @@ Item {
             values: Hyprland.workspaces.values.filter(w => w.id > 0).sort((a, b) => a.id - b.id)
         }
 
-        add: Transition {
-            NumberAnimation { property: "opacity"; from: 0; to: 1; duration: Theme.normal }
-            NumberAnimation { property: "scale"; from: 0.4; to: 1; duration: Theme.normal; easing.type: Easing.OutBack }
-        }
-        remove: Transition {
-            NumberAnimation { property: "opacity"; to: 0; duration: Theme.fast }
-            NumberAnimation { property: "scale"; to: 0.4; duration: Theme.fast }
-        }
         displaced: Transition {
             NumberAnimation { properties: "x"; duration: Theme.normal; easing.type: Easing.OutCubic }
         }
@@ -88,45 +80,56 @@ Item {
             Component.onCompleted: if (isActive) root.activeItem = ws
             Component.onDestruction: if (root.activeItem === ws) root.activeItem = null
 
-            Rectangle {
+            // Pop-in lives here, not in the view's add/remove transitions:
+            // moving to a new workspace creates it and destroys the empty one
+            // we left in the same frame, and with view transitions running the
+            // new button was left undrawn (only the highlight showed).
+            Item {
                 anchors.fill: parent
-                anchors.margins: 2
-                anchors.topMargin: 4
-                anchors.bottomMargin: 4
-                radius: Theme.radius
-                color: ws.urgent ? Theme.urgentBg
-                     : area.containsMouse ? Qt.rgba(1, 1, 1, 0.16)
-                     : Qt.rgba(1, 1, 1, 0.08)
-                border.width: ws.urgent ? 1 : 0
-                border.color: Theme.urgentBorder
 
-                Behavior on color {
-                    ColorAnimation { duration: Theme.fast }
+                NumberAnimation on opacity { from: 0; to: 1; duration: Theme.normal }
+                NumberAnimation on scale { from: 0.4; to: 1; duration: Theme.normal; easing.type: Easing.OutBack }
+
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: 2
+                    anchors.topMargin: 4
+                    anchors.bottomMargin: 4
+                    radius: Theme.radius
+                    color: ws.urgent ? Theme.urgentBg
+                         : area.containsMouse ? Qt.rgba(1, 1, 1, 0.16)
+                         : Qt.rgba(1, 1, 1, 0.08)
+                    border.width: ws.urgent ? 1 : 0
+                    border.color: Theme.urgentBorder
+
+                    Behavior on color {
+                        ColorAnimation { duration: Theme.fast }
+                    }
+
+                    SequentialAnimation on opacity {
+                        running: ws.urgent
+                        loops: Animation.Infinite
+                        alwaysRunToEnd: true
+
+                        NumberAnimation { to: 0.5; duration: 600; easing.type: Easing.InOutSine }
+                        NumberAnimation { to: 1; duration: 600; easing.type: Easing.InOutSine }
+                    }
                 }
 
-                SequentialAnimation on opacity {
-                    running: ws.urgent
-                    loops: Animation.Infinite
-                    alwaysRunToEnd: true
+                Text {
+                    id: name
 
-                    NumberAnimation { to: 0.5; duration: 600; easing.type: Easing.InOutSine }
-                    NumberAnimation { to: 1; duration: 600; easing.type: Easing.InOutSine }
-                }
-            }
+                    anchors.centerIn: parent
+                    text: ws.modelData.name
+                    color: ws.isActive || ws.urgent ? Theme.fg : Theme.fgDim
+                    font.family: Theme.font
+                    font.pixelSize: Theme.barFontSize
+                    font.hintingPreference: Font.PreferFullHinting
+                    renderType: Text.NativeRendering
 
-            Text {
-                id: name
-
-                anchors.centerIn: parent
-                text: ws.modelData.name
-                color: ws.isActive || ws.urgent ? Theme.fg : Theme.fgDim
-                font.family: Theme.font
-                font.pixelSize: Theme.barFontSize
-                font.hintingPreference: Font.PreferFullHinting
-                renderType: Text.NativeRendering
-
-                Behavior on color {
-                    ColorAnimation { duration: Theme.normal }
+                    Behavior on color {
+                        ColorAnimation { duration: Theme.normal }
+                    }
                 }
             }
 
