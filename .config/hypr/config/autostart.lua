@@ -17,5 +17,6 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd([[tmux setenv -g HYPRLAND_INSTANCE_SIGNATURE "$HYPRLAND_INSTANCE_SIGNATURE"]])
 	hl.exec_cmd([[~/.config/hypr/scripts/battery-popup.sh -n -N -m "Battery Low!!" -t "3m"]])
 	hl.exec_cmd("blueberry-tray")
+	hl.exec_cmd("galaxybudsclient /StartMinimized") -- per-bud + case battery for the QS drawer
 	hl.exec_cmd("vicinae server")
 end)

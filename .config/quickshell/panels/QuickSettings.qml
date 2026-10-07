@@ -161,6 +161,12 @@ Drawer {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 8
 
+                // Devices panel (per-bud battery and the like), also SUPER+B
+                IconButton {
+                    icon: Icons.headphones
+                    active: Panels.isOpen("devices", root.bar.screenName)
+                    onClicked: Panels.toggle("devices", root.bar.screenName)
+                }
                 IconButton {
                     icon: Icons.lock
                     onClicked: root.run(["loginctl", "lock-session"])
@@ -415,76 +421,6 @@ Drawer {
                 }
             }
         }
-
-        // Totem keyboard halves (only while connected)
-        Rectangle {
-            width: parent.width
-            height: totemCard.implicitHeight + 24
-            visible: Totem.present
-            radius: Theme.radius
-            color: Theme.surface
-
-            Column {
-                id: totemCard
-
-                x: 14
-                y: 12
-                width: parent.width - 28
-                spacing: 12
-
-                Item {
-                    width: parent.width
-                    height: 18
-
-                    Row {
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 8
-
-                        Icon { text: Icons.keyboard; size: 16 }
-                        StyledText { text: "Totem keyboard"; font.bold: true }
-                    }
-
-                    StyledText {
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: [Totem.left, Totem.right].every(h => h.present) ? "Both halves connected" : "One half connected"
-                        color: Theme.fgMuted
-                        font.pixelSize: Theme.fontSize - 2
-                    }
-                }
-
-                Grid {
-                    id: totemGrid
-
-                    readonly property real cellWidth: (width - columnSpacing) / 2
-
-                    width: parent.width
-                    columns: 2
-                    columnSpacing: 16
-
-                    Repeater {
-                        model: [{ name: "Left", half: Totem.left }, { name: "Right", half: Totem.right }]
-
-                        StatBar {
-                            required property var modelData
-                            readonly property var half: modelData.half
-
-                            width: totemGrid.cellWidth
-                            icon: !half.present ? Icons.close
-                                : half.status === "Charging" ? Icons.batteryCharging
-                                : Icons.level(Icons.batteryLevels, half.capacity / 100)
-                            label: modelData.name
-                            value: !half.present ? "off"
-                                 : half.status === "Charging" ? `${half.capacity}% ⚡`
-                                 : half.status === "Full" ? "Full"
-                                 : `${half.capacity}%`
-                            fraction: half.present ? half.capacity / 100 : 0
-                            warn: half.present && half.capacity < 20 && half.status !== "Charging"
-                        }
-                    }
-                }
-            }
-        }
     }
 
     component PowerButton: Rectangle {
@@ -543,57 +479,6 @@ Drawer {
             id: disarm
             interval: 3000
             onTriggered: btn.armed = false
-        }
-    }
-
-    component StatBar: Column {
-        id: stat
-
-        property string icon
-        property string label
-        property string value
-        property real fraction: 0
-        property bool warn: false
-
-        spacing: 6
-
-        Item {
-            width: parent.width
-            height: 18
-
-            Row {
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 6
-
-                Icon { text: stat.icon; size: 15; color: Theme.fgDim }
-                StyledText { text: stat.label; color: Theme.fgDim; font.pixelSize: Theme.fontSize - 2 }
-            }
-
-            StyledText {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                text: stat.value
-                color: stat.warn ? Theme.red : Theme.fg
-                font.pixelSize: Theme.fontSize - 1
-            }
-        }
-
-        Rectangle {
-            width: parent.width
-            height: 5
-            radius: 3
-            color: Theme.surfaceHighest
-
-            Rectangle {
-                width: Math.max(height, parent.width * Math.min(1, stat.fraction))
-                height: parent.height
-                radius: 3
-                color: stat.warn ? Theme.red : Theme.fgDim
-
-                Behavior on width {
-                    NumberAnimation { duration: Theme.slow; easing.type: Easing.OutCubic }
-                }
-            }
         }
     }
 

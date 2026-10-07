@@ -16,6 +16,7 @@ hl.bind(mod("A"), hl.dsp.exec_cmd("qs ipc call drawer toggle quick")) -- quicksh
 hl.bind(mod("M"), hl.dsp.exec_cmd("qs ipc call drawer toggle media")) -- quickshell media panel
 hl.bind(mod("R"), hl.dsp.exec_cmd("qs ipc call drawer page calendar reminders")) -- quickshell new reminder
 hl.bind(mod("N"), hl.dsp.exec_cmd("qs ipc call drawer toggle notifications")) -- quickshell notifications
+hl.bind(mod("B"), hl.dsp.exec_cmd("qs ipc call drawer toggle devices")) -- quickshell devices (buds/keyboard battery)
 hl.bind(mod("P"), hl.dsp.window.pseudo())
 hl.bind(mod("F"), hl.dsp.window.fullscreen())
 

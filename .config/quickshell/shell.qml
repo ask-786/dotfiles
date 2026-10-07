@@ -40,9 +40,15 @@ ShellRoot {
                 bar: bar
             }
 
-            MediaPanel {
+            DevicesPanel {
+                id: devices
                 bar: bar
                 lift: Math.max(quick.stackHeight, calendar.stackHeight, notifications.stackHeight)
+            }
+
+            MediaPanel {
+                bar: bar
+                lift: Math.max(quick.stackHeight, calendar.stackHeight, notifications.stackHeight) + devices.stackHeight
             }
 
             Popups {
@@ -52,7 +58,7 @@ ShellRoot {
     }
 
     // For keybinds:
-    //   qs ipc call drawer toggle quick        (or calendar, notifications, media)
+    //   qs ipc call drawer toggle quick        (or calendar, notifications, devices, media)
     //   qs ipc call drawer page quick wifi     (wifi | bluetooth | audio)
     //   qs ipc call drawer page calendar reminders   (new reminder form)
     IpcHandler {
