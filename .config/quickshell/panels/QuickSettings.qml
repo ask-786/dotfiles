@@ -660,15 +660,8 @@ Drawer {
                 visible: Bt.enabled
                 icon: Icons.refresh
                 active: Bt.adapter?.discovering ?? false
+                spinning: active
                 onClicked: Bt.adapter.discovering = !Bt.adapter.discovering
-
-                RotationAnimation on rotation {
-                    running: Bt.adapter?.discovering ?? false
-                    loops: Animation.Infinite
-                    from: 0
-                    to: 360
-                    duration: 1500
-                }
             }
 
             StyledSwitch {

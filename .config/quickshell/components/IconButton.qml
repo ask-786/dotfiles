@@ -10,6 +10,7 @@ Rectangle {
     property color activeColor: Theme.primary
     property color activeFg: Theme.primaryFg
     property color idleColor: Theme.surfaceHigh
+    property bool spinning: false // turn the icon, e.g. while searching
 
     signal clicked
 
@@ -27,6 +28,16 @@ Rectangle {
         text: root.icon
         size: root.size * 0.5
         color: root.active ? root.activeFg : Theme.fg
+
+        RotationAnimation on rotation {
+            running: root.spinning
+            loops: Animation.Infinite
+            from: 0
+            to: 360
+            duration: 1500
+            // Upright again once stopped.
+            onRunningChanged: if (!running) target.rotation = 0
+        }
     }
 
     StateLayer {
