@@ -658,6 +658,7 @@ Drawer {
         id: btPage
 
         property bool hasBlueberry: false
+        property string forgetting: "" // device asking "Forget?" (right-click)
 
         spacing: 10
 
@@ -706,7 +707,7 @@ Drawer {
                 values: Bt.devices
             }
 
-            delegate: ListItem {
+            delegate: Column {
                 id: item
 
                 required property var modelData
@@ -716,34 +717,100 @@ Drawer {
                                                 || Bt.connectingPath === dev.dbusPath
                 readonly property bool busy: connecting || dev.pairing
                                           || dev.state === BluetoothDeviceState.Disconnecting
+                // Known to this machine: paired, or trusted from a pairing that failed.
+                readonly property bool known: dev.paired || dev.trusted
+                readonly property bool confirming: btPage.forgetting === dev.dbusPath && known
 
                 width: ListView.view.width
-                icon: Icons.forDevice(dev.icon ?? "")
-                title: dev.name
-                subtitle: dev.pairing ? "Pairing…"
-                        : connecting ? "Connecting…"
-                        : dev.state === BluetoothDeviceState.Disconnecting ? "Disconnecting…"
-                        : dev.connected ? "Connected" + (battery >= 0 ? ` · ${battery}%` : "")
-                        : dev.paired ? "Paired" : "Not paired"
-                highlighted: dev.connected && !busy
+                spacing: 4
 
-                // Unpaired devices get a Pair button (the row does the same).
-                TextButton {
-                    visible: !item.dev.paired && !item.busy
-                    text: "Pair"
-                    fg: Theme.accent
-                    onClicked: Bt.pair(item.dev)
+                ListItem {
+                    width: parent.width
+                    icon: Icons.forDevice(item.dev.icon ?? "")
+                    title: item.dev.name
+                    subtitle: item.dev.pairing ? "Pairing…"
+                            : item.connecting ? "Connecting…"
+                            : item.dev.state === BluetoothDeviceState.Disconnecting ? "Disconnecting…"
+                            : item.dev.connected ? "Connected" + (item.battery >= 0 ? ` · ${item.battery}%` : "")
+                            : item.dev.paired ? "Paired" : "Not paired"
+                    highlighted: item.dev.connected && !item.busy
+
+                    // Unpaired devices get a Pair button (the row does the same).
+                    TextButton {
+                        visible: !item.dev.paired && !item.busy
+                        text: "Pair"
+                        fg: Theme.accent
+                        onClicked: Bt.pair(item.dev)
+                    }
+
+                    onClicked: {
+                        if (item.busy)
+                            return;
+                        if (item.dev.connected)
+                            item.dev.disconnect();
+                        else if (item.dev.paired)
+                            item.dev.connect();
+                        else
+                            Bt.pair(item.dev);
+                    }
+
+                    // Right-click: offer to forget it, behind a confirmation.
+                    onRightClicked: {
+                        if (item.known && !item.busy)
+                            btPage.forgetting = item.confirming ? "" : item.dev.dbusPath;
+                    }
                 }
 
-                onClicked: {
-                    if (busy)
-                        return;
-                    if (dev.connected)
-                        dev.disconnect();
-                    else if (dev.paired)
-                        dev.connect();
-                    else
-                        Bt.pair(dev);
+                Rectangle {
+                    width: parent.width
+                    height: forgetContent.implicitHeight + 2 * Theme.padding
+                    visible: item.confirming
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.width: 1
+                    border.color: Theme.border
+
+                    Column {
+                        id: forgetContent
+
+                        x: Theme.padding
+                        y: Theme.padding
+                        width: parent.width - 2 * Theme.padding
+                        spacing: 4
+
+                        StyledText {
+                            width: parent.width
+                            text: `Forget ${item.dev.name}?`
+                            font.bold: true
+                            wrapMode: Text.Wrap
+                        }
+                        StyledText {
+                            width: parent.width
+                            text: "You'll need to pair it again to use it."
+                            color: Theme.fgDim
+                            font.pixelSize: Theme.fontSize - 1
+                            wrapMode: Text.Wrap
+                        }
+
+                        Row {
+                            anchors.right: parent.right
+                            topPadding: 6
+                            spacing: 6
+
+                            TextButton {
+                                text: "Cancel"
+                                onClicked: btPage.forgetting = ""
+                            }
+                            TextButton {
+                                text: "Forget"
+                                fg: Theme.red
+                                onClicked: {
+                                    btPage.forgetting = "";
+                                    item.dev.forget();
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

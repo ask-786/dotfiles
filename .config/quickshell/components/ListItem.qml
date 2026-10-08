@@ -12,6 +12,7 @@ Rectangle {
     default property alias trailing: trailingRow.data
 
     signal clicked
+    signal rightClicked
 
     implicitHeight: 48
     radius: Theme.radius
@@ -54,7 +55,8 @@ Rectangle {
     }
 
     StateLayer {
-        onClicked: root.clicked()
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: mouse => mouse.button === Qt.RightButton ? root.rightClicked() : root.clicked()
     }
 
     Row {
