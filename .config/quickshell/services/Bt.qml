@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
+import Quickshell.Io
 import qs
 
 Singleton {
@@ -84,5 +85,112 @@ Singleton {
     function toggle() {
         if (adapter)
             adapter.enabled = !adapter.enabled;
+    }
+
+    // Pair, then connect. Pairing leaves the bare link up for a moment, and
+    // Quickshell's connect() refuses while it is ("already connected"), so
+    // the device dropped to "Paired". BlueZ's own Connect() brings the
+    // profiles (HID, audio) up over that link instead.
+    property var _pairing: null
+    readonly property string connectingPath: connector.running ? connector.path : ""
+
+    function pair(device) {
+        device.trusted = true;
+        _pairing = device;
+        device.pair();
+    }
+
+    Connections {
+        target: root._pairing
+
+        function onPairingChanged() {
+            const dev = root._pairing;
+            if (dev.pairing)
+                return;
+            root._pairing = null;
+            if (dev.paired) {
+                connector.path = dev.dbusPath;
+                connector.running = true;
+            }
+        }
+    }
+
+    Process {
+        id: connector
+
+        property string path
+        command: ["busctl", "--system", "call", "org.bluez", path, "org.bluez.Device1", "Connect"]
+    }
+
+    // Pairing agent. Quickshell.Bluetooth registers none, so pairing a
+    // keyboard or phone (passkey or confirmation) used to fail without a
+    // word. scripts/bt-agent.py answers BlueZ and asks here; the question
+    // shows inline on the Bluetooth page, or as a popup when that's closed.
+    property var request: null // see bt-agent.py for the fields
+    property string pageScreen: "" // screen showing the Bluetooth page
+
+    function answer(accept, value) {
+        if (!request)
+            return;
+        if (request.kind === "display") {
+            // Nothing to reply to; stop pairing instead when refused.
+            if (!accept)
+                _device(request.device)?.cancelPair();
+        } else {
+            agent.write(JSON.stringify({ id: request.id, accept, value: value ?? "" }) + "\n");
+        }
+        request = null;
+    }
+
+    function _device(path) {
+        return (adapter?.devices.values ?? []).find(d => d.dbusPath === path) ?? null;
+    }
+
+    function _onAgent(line) {
+        let msg;
+        try {
+            msg = JSON.parse(line);
+        } catch (e) {
+            return;
+        }
+        if (msg.kind === "clear") {
+            if (request?.id === msg.id)
+                request = null;
+        } else {
+            request = msg;
+        }
+    }
+
+    // A display question gets no reply, so drop it when our Pair() returns.
+    Connections {
+        target: root.request?.kind === "display" ? root._device(root.request.device) : null
+
+        function onPairingChanged() {
+            if (!target.pairing)
+                root.request = null;
+        }
+    }
+
+    Process {
+        id: agent
+
+        running: true
+        command: ["python3", Quickshell.shellPath("scripts/bt-agent.py")]
+        stdinEnabled: true
+        stdout: SplitParser {
+            onRead: line => root._onAgent(line)
+        }
+        onExited: code => {
+            root.request = null;
+            // 3: python-gobject is missing, retrying won't help.
+            if (code !== 3)
+                restart.start();
+        }
+    }
+
+    Timer {
+        id: restart
+        interval: 10000
+        onTriggered: agent.running = true
     }
 }

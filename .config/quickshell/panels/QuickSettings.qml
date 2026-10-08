@@ -54,6 +54,11 @@ Drawer {
         Net.setScanning(page === "wifi");
         if (page !== "bluetooth" && Bt.adapter?.discovering)
             Bt.adapter.discovering = false;
+        // Pairing questions show on this page while it's up, else as popups.
+        if (page === "bluetooth")
+            Bt.pageScreen = root.bar.screenName;
+        else if (Bt.pageScreen === root.bar.screenName)
+            Bt.pageScreen = "";
     }
 
     Item {
@@ -680,6 +685,11 @@ Drawer {
             color: Theme.fgDim
         }
 
+        PairingPrompt {
+            width: parent.width
+            visible: Bt.request !== null
+        }
+
         ListView {
             width: parent.width
             height: Math.min(contentHeight, 6 * 52)
@@ -697,41 +707,38 @@ Drawer {
                 required property var modelData
                 readonly property var dev: modelData
                 readonly property int battery: Bt.battery(dev)
-                readonly property bool busy: dev.state === BluetoothDeviceState.Connecting
+                readonly property bool connecting: dev.state === BluetoothDeviceState.Connecting
+                                                || Bt.connectingPath === dev.dbusPath
+                readonly property bool busy: connecting || dev.pairing
                                           || dev.state === BluetoothDeviceState.Disconnecting
-                                          || dev.pairing
 
                 width: ListView.view.width
                 icon: Icons.forDevice(dev.icon ?? "")
                 title: dev.name
                 subtitle: dev.pairing ? "Pairing…"
-                        : dev.state === BluetoothDeviceState.Connecting ? "Connecting…"
+                        : connecting ? "Connecting…"
                         : dev.state === BluetoothDeviceState.Disconnecting ? "Disconnecting…"
                         : dev.connected ? "Connected" + (battery >= 0 ? ` · ${battery}%` : "")
-                        : dev.paired ? "Paired" : "Available"
-                highlighted: dev.connected
+                        : dev.paired ? "Paired" : "Not paired"
+                highlighted: dev.connected && !busy
+
+                // Unpaired devices get a Pair button (the row does the same).
+                TextButton {
+                    visible: !item.dev.paired && !item.busy
+                    text: "Pair"
+                    fg: Theme.accent
+                    onClicked: Bt.pair(item.dev)
+                }
 
                 onClicked: {
                     if (busy)
                         return;
-                    if (dev.connected) {
+                    if (dev.connected)
                         dev.disconnect();
-                    } else if (dev.paired) {
+                    else if (dev.paired)
                         dev.connect();
-                    } else {
-                        dev.trusted = true;
-                        dev.pair();
-                    }
-                }
-
-                // Newly paired devices: connect straight away.
-                Connections {
-                    target: item.dev
-
-                    function onPairedChanged() {
-                        if (item.dev.paired)
-                            item.dev.connect();
-                    }
+                    else
+                        Bt.pair(dev);
                 }
             }
         }

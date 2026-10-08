@@ -6,16 +6,19 @@ import qs
 import qs.components
 import qs.services
 
-// Popups, top right: fired reminders (with Snooze / Done, until dealt with)
-// and prayer times (Stop for the adhan, Done), then notifications, newest first in each. Over fullscreen windows too,
-// on the focused monitor.
+// Popups, top right: Bluetooth pairing questions (unless the Bluetooth page
+// is open to show them), fired reminders (with Snooze / Done, until dealt
+// with) and prayer times (Stop for the adhan, Done), then notifications,
+// newest first in each. Over fullscreen windows too, on the focused monitor.
 PanelWindow {
     id: root
 
     required property var bar
 
+    readonly property bool pairing: Bt.request !== null && Bt.pageScreen === ""
+
     screen: bar.screen
-    visible: (Reminders.alerts.length > 0 || Notifs.popups.length > 0) && Hyprland.focusedMonitor?.name === bar.screenName
+    visible: (pairing || Reminders.alerts.length > 0 || Notifs.popups.length > 0) && Hyprland.focusedMonitor?.name === bar.screenName
     color: "transparent"
 
     anchors.top: true
@@ -26,7 +29,8 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell:popups"
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+    // Only a PIN or passkey to type needs the keyboard.
+    WlrLayershell.keyboardFocus: pairing && pairingPrompt.entry ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
     implicitWidth: 360
     implicitHeight: Math.max(1, cards.implicitHeight)
@@ -36,6 +40,14 @@ PanelWindow {
 
         width: parent.width
         spacing: Theme.spacing
+
+        PairingPrompt {
+            id: pairingPrompt
+
+            width: cards.width
+            visible: root.pairing
+            popup: true
+        }
 
         Repeater {
             model: ScriptModel {
