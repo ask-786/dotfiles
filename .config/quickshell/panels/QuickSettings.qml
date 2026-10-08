@@ -4,6 +4,7 @@ import Quickshell.Services.UPower
 import Quickshell.Services.Pipewire
 import Quickshell.Networking
 import Quickshell.Bluetooth
+import Quickshell.Io
 import qs
 import qs.components
 import qs.services
@@ -654,6 +655,10 @@ Drawer {
     }
 
     component BluetoothPage: Column {
+        id: btPage
+
+        property bool hasBlueberry: false
+
         spacing: 10
 
         PageHeader {
@@ -743,11 +748,19 @@ Drawer {
             }
         }
 
+        // Only when blueberry is installed; checked each time the page loads.
         TextButton {
             anchors.horizontalCenter: parent.horizontalCenter
+            visible: btPage.hasBlueberry
             icon: Icons.cog
             text: "Bluetooth settings"
             onClicked: root.run(["blueberry"])
+        }
+
+        Process {
+            running: true
+            command: ["sh", "-c", "command -v blueberry"]
+            onExited: code => btPage.hasBlueberry = code === 0
         }
     }
 
