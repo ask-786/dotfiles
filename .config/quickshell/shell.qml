@@ -23,6 +23,7 @@ ShellRoot {
 
             ClickCatcher {
                 bar: bar
+                drawers: [quick, calendar, notifications, devices, media]
             }
 
             QuickSettings {
@@ -47,6 +48,7 @@ ShellRoot {
             }
 
             MediaPanel {
+                id: media
                 bar: bar
                 lift: Math.max(quick.stackHeight, calendar.stackHeight, notifications.stackHeight) + devices.stackHeight
             }

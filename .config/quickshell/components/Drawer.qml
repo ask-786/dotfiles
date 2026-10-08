@@ -58,8 +58,8 @@ PanelWindow {
     exclusionMode: bar.fullscreen ? ExclusionMode.Ignore : ExclusionMode.Normal
     exclusiveZone: 0
     // Overlay keeps it above the ClickCatcher (Top) that closes it; over a
-    // fullscreen window both are Overlay and the catcher, mapped no later
-    // than the drawer, stays below. Keyboard
+    // fullscreen window both are Overlay and the catcher cuts a hole for the
+    // body instead (stacking there follows map order). Keyboard
     // focus must stay OnDemand: an Exclusive layer makes Hyprland route all
     // pointer input to exclusive layers only, so outside clicks never land.
     WlrLayershell.layer: WlrLayer.Overlay
