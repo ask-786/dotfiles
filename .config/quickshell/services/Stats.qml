@@ -251,10 +251,12 @@ Singleton {
         }
     }
 
-    // Prefer the CPU package sensor; fall back to what waybar read.
+    // Prefer the CPU package sensor (Intel coretemp, AMD k10temp/zenpower);
+    // fall back to what waybar read. ACPI zones can be static (the HP's
+    // acpitz always reads 10°C), so they're the last resort.
     Process {
         running: true
-        command: ["sh", "-c", "for d in /sys/class/hwmon/hwmon*; do [ \"$(cat $d/name)\" = coretemp ] && { echo $d/temp1_input; exit; }; done; echo /sys/class/thermal/thermal_zone0/temp"]
+        command: ["sh", "-c", "for d in /sys/class/hwmon/hwmon*; do case \"$(cat $d/name)\" in coretemp|k10temp|zenpower) echo $d/temp1_input; exit ;; esac; done; echo /sys/class/thermal/thermal_zone0/temp"]
         stdout: StdioCollector {
             onStreamFinished: root._tempPath = text.trim()
         }
