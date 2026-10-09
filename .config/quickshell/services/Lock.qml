@@ -6,8 +6,9 @@ import Quickshell.Io
 import Quickshell.Services.Pam
 
 // The lock screen's state and its PAM conversation (replaces hyprlock). It
-// uses hyprlock's stack, /etc/pam.d/hyprlock, so whatever a machine set up
-// for hyprlock applies here too. PAM starts on Enter, not on lock, so a
+// uses hyprlock's stack, /etc/pam.d/hyprlock, so the order is unchanged:
+// the password is tried first, and an empty Enter or a wrong password falls
+// through to face unlock (howdy). PAM starts on Enter, not on lock, so a
 // failed attempt can't loop when faillock refuses straight away.
 //
 // Locking goes through `loginctl lock-session` → hypridle's lock_cmd →
@@ -20,9 +21,11 @@ Singleton {
     property bool locking: false
     // The compositor has confirmed the lock (from LockScreen).
     property bool secure: false
-    // PAM is working on an answer.
+    // PAM is working on an answer (checking the password, or the camera).
     readonly property bool busy: pam.active && !pam.responseRequired
-    // Under the field: PAM's messages, or why the last attempt failed.
+    // The last answer was empty, so this attempt is face only.
+    property bool faceOnly: false
+    // Under the field: howdy's progress, or why the last attempt failed.
     property string status: ""
     property bool statusIsError: false
 
@@ -90,7 +93,8 @@ Singleton {
     function submit(text) {
         if (!persist.locked || busy)
             return;
-        status = "";
+        faceOnly = text === "";
+        status = faceOnly ? "Looking for your face…" : "";
         statusIsError = false;
         if (pam.active && pam.responseRequired) {
             pam.respond(text);
@@ -159,8 +163,8 @@ Singleton {
                     respond(root._pending);
                     root._pending = "";
                 }
-                // Otherwise a second prompt (a module further down the
-                // stack asking again): wait for Enter.
+                // Otherwise a second prompt (the stack's `include login`
+                // asks again after face unlock failed): wait for Enter.
                 return;
             }
             if (message.trim() !== "") {
@@ -180,7 +184,7 @@ Singleton {
             } else if (result === PamResult.MaxTries) {
                 root._fail("Too many attempts, try again later");
             } else {
-                root._fail("Wrong password");
+                root._fail(root.faceOnly ? "Face not recognized" : "Wrong password or face not recognized");
             }
         }
 

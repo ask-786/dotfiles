@@ -165,7 +165,7 @@ Item {
             StyledText {
                 anchors.fill: parent
                 visible: input.text === ""
-                text: "Password"
+                text: "Enter for face, or type your password"
                 color: Theme.fgMuted
                 font.pixelSize: Theme.fontSize
             }
@@ -177,7 +177,7 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: Theme.padding
             anchors.verticalCenter: parent.verticalCenter
-            text: Icons.refresh
+            text: Lock.faceOnly ? Icons.face : Icons.refresh
             size: 18
             color: Theme.accent
             opacity: Lock.busy ? 1 : 0
@@ -187,7 +187,7 @@ Item {
             }
 
             RotationAnimation on rotation {
-                running: Lock.busy
+                running: Lock.busy && !Lock.faceOnly
                 loops: Animation.Infinite
                 from: 0
                 to: 360
