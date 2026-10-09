@@ -10,10 +10,13 @@ WlSessionLock {
     locked: Lock.locked
 
     WlSessionLockSurface {
+        id: surface
+
         color: "black"
 
         LockContent {
             anchors.fill: parent
+            screen: surface.screen
         }
     }
 }

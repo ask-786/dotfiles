@@ -89,7 +89,7 @@ ShellRoot {
 
         function lock(): string {
             Lock.lock();
-            return Lock.locked ? "locked" : "";
+            return Lock.locked || Lock.locking ? "locked" : "";
         }
     }
 

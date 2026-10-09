@@ -7,7 +7,7 @@ import qs
 import qs.components
 import qs.services
 
-// What one monitor shows while locked: the blurred wallpaper, the clock and
+// What one monitor shows while locked: the blurred screen, the clock and
 // date above the password field (where hyprlock had them), and below it
 // anything that needs you: fired reminders, what's playing, running timers
 // and a one-line-each list of the latest notifications (no bodies or
@@ -15,6 +15,7 @@ import qs.services
 Item {
     id: root
 
+    required property var screen
     readonly property var timers: Reminders.items.filter(r => r.duration)
     readonly property var notifications: Notifs.list.slice().reverse()
     readonly property int maxNotifications: 5
@@ -39,11 +40,29 @@ Item {
         color: Theme.bg
     }
 
+    // What was on screen when it locked (see Lock.shotDir), else the wallpaper.
+    Image {
+        id: shot
+
+        anchors.fill: parent
+        source: root.screen ? `file://${Lock.shotDir}/${root.screen.name}.ppm` : ""
+        fillMode: Image.PreserveAspectCrop
+        cache: false
+        asynchronous: true
+        visible: false
+        // Kept in memory from here on; the file can go.
+        // (`shot.status`: a bare `status` is the status line's id.)
+        onStatusChanged: {
+            if (root.screen && (shot.status === Image.Ready || shot.status === Image.Error))
+                Lock.shotLoaded(root.screen.name);
+        }
+    }
+
     Image {
         id: wallpaper
 
         anchors.fill: parent
-        source: Lock.wallpaper ? `file://${Lock.wallpaper}` : ""
+        source: shot.status === Image.Error && Lock.wallpaper ? `file://${Lock.wallpaper}` : ""
         fillMode: Image.PreserveAspectCrop
         sourceSize.width: width
         sourceSize.height: height
@@ -53,8 +72,9 @@ Item {
 
     MultiEffect {
         anchors.fill: parent
-        source: wallpaper
-        visible: wallpaper.status === Image.Ready
+        source: shot.status === Image.Ready ? shot : wallpaper
+        visible: shot.status === Image.Ready || wallpaper.status === Image.Ready
+        autoPaddingEnabled: false
         blurEnabled: true
         blur: 1
         blurMax: 64

@@ -16,23 +16,60 @@ Singleton {
     id: root
 
     readonly property bool locked: persist.locked
+    // Taking the screenshots; the lock follows.
+    property bool locking: false
     // PAM is working on an answer.
     readonly property bool busy: pam.active && !pam.responseRequired
     // Under the field: PAM's messages, or why the last attempt failed.
     property string status: ""
     property bool statusIsError: false
 
-    // hyprpaper's wallpaper, blurred behind the lock screen.
+    // What was on screen, one half-size shot per monitor (<name>.ppm),
+    // blurred behind the lock screen like hyprlock's `path = screenshot`.
+    // Taken before locking: once locked, Hyprland shows nothing else to
+    // capture. Private to the user, and deleted as soon as every monitor's
+    // lock screen has loaded its shot (a monitor added while locked gets
+    // the wallpaper), or else on unlock or the next start.
+    readonly property string shotDir: `${Quickshell.env("XDG_RUNTIME_DIR")}/quickshell-lock`
+    // Monitors whose lock screen hasn't loaded its shot yet.
+    property var _unloadedShots: []
+    // hyprpaper's wallpaper, in case a shot is missing.
     property string wallpaper: ""
 
     property string _pending: ""
     property bool _hasPending: false
 
     function lock() {
-        if (persist.locked)
+        if (persist.locked || locking)
             return;
         status = "";
         statusIsError = false;
+        locking = true;
+        _unloadedShots = Quickshell.screens.map(s => s.name);
+        shooter.exec(["sh", "-c", 'umask 077; d=$1; shift; rm -rf "$d"; mkdir -p "$d"; for o; do grim -s 0.5 -t ppm -o "$o" "$d/$o.ppm" & done; wait',
+                      "sh", shotDir].concat(Quickshell.screens.map(s => s.name)));
+        shotTimeout.restart();
+    }
+
+    // A lock screen is done with its shot (loaded, or missing).
+    function shotLoaded(screenName) {
+        if (_unloadedShots.length === 0)
+            return;
+        _unloadedShots = _unloadedShots.filter(n => n !== screenName);
+        if (_unloadedShots.length === 0)
+            _removeShots();
+    }
+
+    function _removeShots() {
+        _unloadedShots = [];
+        Quickshell.execDetached(["rm", "-rf", shotDir]);
+    }
+
+    function _engage() {
+        if (!locking)
+            return;
+        locking = false;
+        shotTimeout.stop();
         persist.locked = true;
         Panels.close();
     }
@@ -60,11 +97,32 @@ Singleton {
         statusIsError = true;
     }
 
+    Process {
+        id: shooter
+
+        onExited: root._engage()
+    }
+
+    // Lock anyway if grim hangs; the wallpaper stands in.
+    Timer {
+        id: shotTimeout
+
+        interval: 1500
+        onTriggered: root._engage()
+    }
+
     PersistentProperties {
         id: persist
 
         reloadableId: "lock"
         property bool locked: false
+
+        // A fresh start (not a reload): shots left over if Quickshell died
+        // while locked.
+        onLoaded: {
+            if (!root.locking && !locked)
+                root._removeShots();
+        }
     }
 
     FileView {
@@ -106,6 +164,7 @@ Singleton {
                 root.status = "";
                 root.statusIsError = false;
                 persist.locked = false;
+                root._removeShots();
             } else if (result === PamResult.MaxTries) {
                 root._fail("Too many attempts, try again later");
             } else {
