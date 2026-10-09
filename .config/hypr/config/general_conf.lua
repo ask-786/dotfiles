@@ -16,6 +16,9 @@ hl.config({
 
 	misc = {
 		force_default_wallpaper = 0,
+		-- If the lock screen (Quickshell) dies, another one, e.g. hyprlock
+		-- from a TTY, may take over the lock.
+		allow_session_lock_restore = true,
 	},
 
 	dwindle = {

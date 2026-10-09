@@ -59,6 +59,8 @@ ShellRoot {
         }
     }
 
+    LockScreen {}
+
     // For keybinds:
     //   qs ipc call drawer toggle quick        (or calendar, notifications, devices, media)
     //   qs ipc call drawer page quick wifi     (wifi | bluetooth | audio)
@@ -76,6 +78,18 @@ ShellRoot {
 
         function close(): void {
             Panels.close();
+        }
+    }
+
+    //   qs ipc call lock lock                    (hypridle's lock_cmd; there's no unlock)
+    // Prints "locked" so the caller can tell it worked: a config that failed
+    // to load has no lock target, and `qs ipc call` still exits 0 then.
+    IpcHandler {
+        target: "lock"
+
+        function lock(): string {
+            Lock.lock();
+            return Lock.locked ? "locked" : "";
         }
     }
 
