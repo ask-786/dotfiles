@@ -81,15 +81,23 @@ ShellRoot {
         }
     }
 
-    //   qs ipc call lock lock                    (hypridle's lock_cmd; there's no unlock)
-    // Prints "locked" so the caller can tell it worked: a config that failed
-    // to load has no lock target, and `qs ipc call` still exits 0 then.
+    //   qs ipc call lock lock                    (from hypr/scripts/lock.sh; there's no unlock)
+    //   qs ipc call lock state                   ("locked" once the compositor confirms)
+    // lock prints "locking" so the caller can tell the target exists: a
+    // config that failed to load has none, and `qs ipc call` still exits 0
+    // then. The lock comes up a moment later (screenshots first), and can
+    // still fail, so the caller waits for state.
     IpcHandler {
         target: "lock"
 
         function lock(): string {
             Lock.lock();
-            return Lock.locked || Lock.locking ? "locked" : "";
+            return Lock.locked || Lock.locking ? "locking" : "";
+        }
+
+        // "locking" until the compositor confirms, "" if it failed.
+        function state(): string {
+            return Lock.secure ? "locked" : Lock.locked || Lock.locking ? "locking" : "";
         }
     }
 

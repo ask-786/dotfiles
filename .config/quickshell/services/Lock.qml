@@ -18,6 +18,8 @@ Singleton {
     readonly property bool locked: persist.locked
     // Taking the screenshots; the lock follows.
     property bool locking: false
+    // The compositor has confirmed the lock (from LockScreen).
+    property bool secure: false
     // PAM is working on an answer.
     readonly property bool busy: pam.active && !pam.responseRequired
     // Under the field: PAM's messages, or why the last attempt failed.
@@ -49,6 +51,16 @@ Singleton {
         shooter.exec(["sh", "-c", 'umask 077; d=$1; shift; rm -rf "$d"; mkdir -p "$d"; for o; do grim -s 0.5 -t ppm -o "$o" "$d/$o.ppm" & done; wait',
                       "sh", shotDir].concat(Quickshell.screens.map(s => s.name)));
         shotTimeout.restart();
+    }
+
+    // LockScreen couldn't take the lock, so nothing is locked: forget it, or
+    // every later lock() would think it's already up.
+    function abort() {
+        if (!persist.locked)
+            return;
+        console.warn("Lock: the session lock didn't start");
+        persist.locked = false;
+        _removeShots();
     }
 
     // A lock screen is done with its shot (loaded, or missing).
