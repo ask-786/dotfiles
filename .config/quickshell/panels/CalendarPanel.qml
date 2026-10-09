@@ -443,6 +443,7 @@ Drawer {
                         id: minute
                         to: 59
                         step: 5
+                        fineStep: 1
                     }
                     Item { width: 4; height: 1 }
                     Segmented {
