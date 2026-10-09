@@ -11,6 +11,7 @@ Singleton {
     readonly property var wifiLevels: ["\u{F091F}", "\u{F0922}", "\u{F0925}", "\u{F0928}"]
     readonly property string ethernet: "\u{F0200}"
     readonly property string lock: "\u{F033E}"
+    readonly property string face: "\u{F0C99}" // face recognition
 
     readonly property string bluetooth: "\u{F00AF}"
     readonly property string bluetoothConnected: "\u{F00B1}"
