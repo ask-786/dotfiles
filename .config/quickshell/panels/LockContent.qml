@@ -18,6 +18,7 @@ Item {
     required property var screen
     readonly property var timers: Reminders.items.filter(r => r.duration)
     readonly property var notifications: Notifs.list.slice().reverse()
+    // Rows shown at once; the rest scroll.
     readonly property int maxNotifications: 5
     readonly property int columnWidth: 400
 
@@ -417,27 +418,38 @@ Item {
 
     // ----------------------------------------------------- notification list
 
-    // One panel, one line per notification: icon, app, summary, age.
+    // One panel, one line per notification: icon, app, summary, age. Shows
+    // maxNotifications rows and scrolls through the rest.
     component NotificationList: Rectangle {
-        height: list.implicitHeight
+        height: column.implicitHeight
         radius: Theme.radius
         color: Theme.panelBg
         border.width: 1
         border.color: Theme.panelBorder
 
         Column {
-            id: list
+            id: column
 
             width: parent.width
             topPadding: 4
             bottomPadding: 4
 
-            Repeater {
+            ListView {
+                id: list
+
+                readonly property int rowHeight: 36
+                // Rows below the visible ones.
+                readonly property int hidden: Math.max(0, Math.ceil((contentHeight - (contentY - originY) - height) / rowHeight))
+
+                width: parent.width
+                height: Math.min(count, root.maxNotifications) * rowHeight
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
                 model: ScriptModel {
-                    values: root.notifications.slice(0, root.maxNotifications)
+                    values: root.notifications
                 }
 
-                Item {
+                delegate: Item {
                     id: line
 
                     required property var modelData
@@ -445,7 +457,7 @@ Item {
                     readonly property bool critical: modelData.urgency === NotificationUrgency.Critical
 
                     width: list.width
-                    height: 36
+                    height: list.rowHeight
 
                     Rectangle {
                         visible: line.index > 0
@@ -517,12 +529,13 @@ Item {
                 }
             }
 
+            // Kept while scrolled to the end, so the panel doesn't jump.
             StyledText {
-                visible: root.notifications.length > root.maxNotifications
+                visible: list.count > root.maxNotifications
                 x: Theme.padding
                 width: list.width - 2 * Theme.padding
                 height: 28
-                text: `+${root.notifications.length - root.maxNotifications} more`
+                text: list.hidden > 0 ? `+${list.hidden} more` : `${list.count} notifications`
                 color: Theme.fgMuted
                 font.pixelSize: Theme.fontSize - 2
             }
