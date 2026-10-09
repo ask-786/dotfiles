@@ -2,6 +2,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Networking
 import qs
 
@@ -34,12 +35,31 @@ Singleton {
         return s > 1 ? s / 100 : s;
     }
 
+    // Quickshell exposes no "scan in progress" state, so track our own
+    // request: `wifi list --rescan yes` returns once NetworkManager's scan
+    // finishes, and also waits out one that's already running.
+    readonly property bool scanning: scanner.running
+
     function setScanning(on) {
         if (wifiDevice)
             wifiDevice.scannerEnabled = on;
+        if (on)
+            rescan();
     }
+
+    function rescan() {
+        if (wifiEnabled)
+            scanner.running = true;
+    }
+
+    onWifiEnabledChanged: if (wifiEnabled && wifiDevice?.scannerEnabled) rescan()
 
     function toggleWifi() {
         Networking.wifiEnabled = !Networking.wifiEnabled;
+    }
+
+    Process {
+        id: scanner
+        command: ["nmcli", "-t", "-f", "SSID", "device", "wifi", "list", "--rescan", "yes"]
     }
 }

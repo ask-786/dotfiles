@@ -24,6 +24,8 @@ Rectangle {
     }
 
     Icon {
+        id: glyph
+
         anchors.centerIn: parent
         text: root.icon
         size: root.size * 0.5
@@ -36,7 +38,7 @@ Rectangle {
             to: 360
             duration: 1500
             // Upright again once stopped.
-            onRunningChanged: if (!running) target.rotation = 0
+            onRunningChanged: if (!running) glyph.rotation = 0
         }
     }
 

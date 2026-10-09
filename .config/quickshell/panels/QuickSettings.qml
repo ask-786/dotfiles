@@ -513,7 +513,16 @@ Drawer {
             title: "Wi-Fi"
             onBack: root.go("")
 
+            IconButton {
+                visible: Net.wifiEnabled
+                icon: Icons.refresh
+                active: Net.scanning
+                spinning: active
+                onClicked: Net.rescan()
+            }
+
             StyledSwitch {
+                anchors.verticalCenter: parent.verticalCenter
                 checked: Net.wifiEnabled
                 onToggled: Net.toggleWifi()
             }
