@@ -34,6 +34,32 @@ Singleton {
         return n.expireTimeout > 0 ? n.expireTimeout : defaultTimeout; // ms
     }
 
+    // "now", "5m ago", "2h ago", "3d ago"
+    function age(n, now) {
+        const m = Math.floor((now - (arrived[n?.id] ?? now)) / 60000);
+        return m < 1 ? "now" : m < 60 ? `${m}m ago` : m < 1440 ? `${Math.floor(m / 60)}h ago` : `${Math.floor(m / 1440)}d ago`;
+    }
+
+    // The image or icon to show for a notification, "" for none.
+    function iconSource(n) {
+        if (!n)
+            return "";
+        // notify-send's -i also arrives as an unchecked image://icon/<name>;
+        // a missing theme icon would show the magenta placeholder.
+        if (n.image && !n.image.startsWith("image://icon/"))
+            return n.image;
+        // Apps that send no icon get their desktop entry's (as DMS does).
+        const name = n.image ? n.image.slice("image://icon/".length)
+                   : n.appIcon || DesktopEntries.heuristicLookup(n.desktopEntry || n.appName)?.icon || "";
+        if (!name)
+            return "";
+        if (name.startsWith("/"))
+            return `file://${name}`;
+        if (name.includes("://"))
+            return name;
+        return Quickshell.iconPath(name, true);
+    }
+
     function hidePopup(n) {
         popups = popups.filter(p => p.n !== n);
         if (n?.transient && n.tracked)

@@ -18,35 +18,13 @@ Rectangle {
     readonly property var n: notification
     readonly property bool critical: n?.urgency === NotificationUrgency.Critical
     readonly property bool low: n?.urgency === NotificationUrgency.Low
-    readonly property string iconSource: {
-        if (!n)
-            return "";
-        // notify-send's -i also arrives as an unchecked image://icon/<name>;
-        // a missing theme icon would show the magenta placeholder.
-        if (n.image && !n.image.startsWith("image://icon/"))
-            return n.image;
-        // Apps that send no icon get their desktop entry's (as DMS does).
-        const name = n.image ? n.image.slice("image://icon/".length)
-                   : n.appIcon || DesktopEntries.heuristicLookup(n.desktopEntry || n.appName)?.icon || "";
-        if (!name)
-            return "";
-        if (name.startsWith("/"))
-            return `file://${name}`;
-        if (name.includes("://"))
-            return name;
-        return Quickshell.iconPath(name, true);
-    }
+    readonly property string iconSource: Notifs.iconSource(n)
 
     implicitHeight: Math.max(content.implicitHeight, iconBox.height) + 2 * Theme.padding
     radius: Theme.radius
     color: critical ? Theme.criticalBg : popup ? Theme.panelBg : Theme.surface
     border.width: 1
     border.color: critical ? Theme.urgentBorder : popup ? Theme.panelBorder : Theme.border
-
-    function age(now) {
-        const m = Math.floor((now - (Notifs.arrived[n?.id] ?? now)) / 60000);
-        return m < 1 ? "now" : m < 60 ? `${m}m ago` : m < 1440 ? `${Math.floor(m / 60)}h ago` : `${Math.floor(m / 1440)}d ago`;
-    }
 
     SystemClock {
         id: clock
@@ -106,7 +84,7 @@ Rectangle {
 
         StyledText {
             width: parent.width
-            text: [root.n?.appName ?? "", root.age(clock.date.getTime())].filter(s => s).join(" · ")
+            text: [root.n?.appName ?? "", Notifs.age(root.n, clock.date.getTime())].filter(s => s).join(" · ")
             color: root.critical ? Theme.fgDim : Theme.fgMuted
             font.pixelSize: Theme.fontSize - 2
         }

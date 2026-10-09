@@ -325,6 +325,14 @@ Singleton {
         return m % 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m / 60}h`;
     }
 
+    // "4:05", "1:02:09"
+    function clockText(ms) {
+        const s = Math.ceil(ms / 1000);
+        const pad = n => String(n).padStart(2, "0");
+        const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
+        return h > 0 ? `${h}:${pad(m)}:${pad(s % 60)}` : `${m}:${pad(s % 60)}`;
+    }
+
     // ------------------------------------------------------------- firing
 
     function _check() {

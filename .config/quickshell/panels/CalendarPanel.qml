@@ -162,14 +162,6 @@ Drawer {
         return diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : Qt.formatDate(d, "ddd, MMM d");
     }
 
-    // "4:05", "1:02:09"
-    function clockText(ms) {
-        const s = Math.ceil(ms / 1000);
-        const pad = n => String(n).padStart(2, "0");
-        const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
-        return h > 0 ? `${h}:${pad(m)}:${pad(s % 60)}` : `${m}:${pad(s % 60)}`;
-    }
-
     onOpenChanged: {
         if (open) {
             if (Panels.page === "reminders")
@@ -248,106 +240,6 @@ Drawer {
 
         StateLayer {
             onClicked: field.clicked()
-        }
-    }
-
-    // A timer in the list: big countdown, progress, pause / reset.
-    component TimerCard: Rectangle {
-        id: card
-
-        required property var r
-        readonly property real remaining: Reminders.remainingOf(r, clock.date.getTime())
-        readonly property bool paused: r.paused === true
-
-        height: 82
-        radius: Theme.radius
-        color: Theme.surface
-
-        Icon {
-            x: 12
-            y: 12
-            text: Icons.timer
-            size: 16
-            color: card.paused ? Theme.fgMuted : Theme.accent
-        }
-
-        StyledText {
-            x: 36
-            y: 10
-            width: buttons.x - x - 8
-            text: Reminders.title(card.r)
-            color: Theme.fgDim
-            font.pixelSize: Theme.fontSize - 1
-        }
-
-        Row {
-            id: buttons
-
-            anchors.right: parent.right
-            anchors.rightMargin: 6
-            y: 6
-            spacing: 2
-
-            IconButton {
-                size: 28
-                icon: card.paused ? Icons.play : Icons.pause
-                idleColor: "transparent"
-                onClicked: card.paused ? Reminders.resumeTimer(card.r.id) : Reminders.pauseTimer(card.r.id)
-            }
-            IconButton {
-                size: 28
-                icon: Icons.restart
-                idleColor: "transparent"
-                onClicked: Reminders.resetTimer(card.r.id)
-            }
-            IconButton {
-                size: 28
-                icon: Icons.close
-                idleColor: "transparent"
-                onClicked: Reminders.remove(card.r.id)
-            }
-        }
-
-        StyledText {
-            id: countdown
-
-            x: 36
-            y: 32
-            text: root.clockText(card.remaining)
-            color: card.paused ? Theme.fgDim : Theme.fg
-            font.pixelSize: 24
-            font.bold: true
-        }
-
-        StyledText {
-            anchors.left: countdown.right
-            anchors.leftMargin: 10
-            anchors.baseline: countdown.baseline
-            text: card.paused ? (card.remaining === card.r.duration ? "Ready" : "Paused")
-                : `ends ${Qt.formatTime(new Date(card.r.due), "hh:mm AP")}`
-            color: Theme.fgMuted
-            font.pixelSize: Theme.fontSize - 2
-        }
-
-        Rectangle {
-            x: 12
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 10
-            width: parent.width - 24
-            height: 4
-            radius: 2
-            color: Theme.surfaceHigh
-
-            Rectangle {
-                width: parent.width * Math.min(1, card.remaining / card.r.duration)
-                height: parent.height
-                radius: 2
-                color: card.paused ? Theme.fgMuted : Theme.accent
-
-                Behavior on width {
-                    NumberAnimation { duration: Theme.normal }
-                }
-            }
         }
     }
 
@@ -613,6 +505,7 @@ Drawer {
 
                     TimerCard {
                         width: parent.width
+                        now: clock.date.getTime()
                         visible: !!row.modelData.duration
                         r: row.modelData
                     }
