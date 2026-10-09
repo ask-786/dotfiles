@@ -129,7 +129,7 @@ def main():
             pass
 
     notify_and_wait(urgency, title, f"{body} · {where}", ancestors(os.getppid()))
-    subprocess.Popen(["paplay", SOUNDS + sound],
+    subprocess.Popen(["paplay", "--property=media.role=event", SOUNDS + sound],
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                      start_new_session=True)
 
