@@ -201,7 +201,7 @@ Singleton {
         if (!playAdhan)
             return;
         // Falls back to a chime if the adhan file is missing.
-        player.exec(["sh", "-c", 'f=$1; [ -r "$f" ] || f=/usr/share/sounds/freedesktop/stereo/complete.oga; exec pw-play "$f"',
+        player.exec(["sh", "-c", 'f=$1; [ -r "$f" ] || f=/usr/share/sounds/freedesktop/stereo/complete.oga; exec pw-play --media-role Notification "$f"',
             "adhan", t.name === "Fajr" && fajrSound ? fajrSound : sound]);
     }
 

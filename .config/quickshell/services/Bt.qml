@@ -65,7 +65,7 @@ Singleton {
         _warned[addr] = w.at;
         Quickshell.execDetached(["notify-send", "-a", "Bluetooth", "-u", w.urgency, "-i", w.icon,
             "-h", `string:x-dunst-stack-tag:bt-battery-${addr}`, `${device.name} ${w.title}`, `${level}%`]);
-        Quickshell.execDetached(["paplay", `/usr/share/sounds/freedesktop/stereo/${w.sound}.oga`]);
+        Quickshell.execDetached(["paplay", "--property=media.role=event", `/usr/share/sounds/freedesktop/stereo/${w.sound}.oga`]);
     }
 
     Instantiator {

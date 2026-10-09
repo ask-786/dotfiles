@@ -899,6 +899,27 @@ Drawer {
             }
         }
 
+        StyledText {
+            text: "Alerts"
+            color: Theme.fgDim
+            font.pixelSize: Theme.fontSize - 2
+            leftPadding: 4
+            topPadding: 6
+        }
+
+        ListItem {
+            width: parent.width
+            icon: Icons.music
+            title: "Lower media for alerts"
+            subtitle: `To ${Math.round(Ducking.level * 100)}% while one plays`
+            onClicked: Ducking.setEnabled(!Ducking.enabled)
+
+            StyledSwitch {
+                checked: Ducking.enabled
+                onToggled: Ducking.setEnabled(!checked)
+            }
+        }
+
         TextButton {
             anchors.horizontalCenter: parent.horizontalCenter
             icon: Icons.cog

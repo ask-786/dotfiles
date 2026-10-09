@@ -73,7 +73,7 @@ Singleton {
             "-i", w.urgency === "critical" ? "battery-caution" : "battery-low",
             "-h", "string:x-dunst-stack-tag:battery", w.title, body];
         notify.running = true;
-        Quickshell.execDetached(["paplay", `/usr/share/sounds/freedesktop/stereo/${w.sound}.oga`]);
+        Quickshell.execDetached(["paplay", "--property=media.role=event", `/usr/share/sounds/freedesktop/stereo/${w.sound}.oga`]);
     }
 
     Process {

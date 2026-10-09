@@ -29,7 +29,7 @@ Singleton {
         Quickshell.execDetached(["notify-send", "-a", "Totem", "-u", urgency, "-i", icon,
             "-h", `string:x-dunst-stack-tag:totem-${half.name}`,
             `Totem ${half.name.toLowerCase()} half ${title}`, `${half.capacity}%`]);
-        Quickshell.execDetached(["paplay", `/usr/share/sounds/freedesktop/stereo/${sound}.oga`]);
+        Quickshell.execDetached(["paplay", "--property=media.role=event", `/usr/share/sounds/freedesktop/stereo/${sound}.oga`]);
     }
 
     function _checkLow(half) {

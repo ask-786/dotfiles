@@ -61,6 +61,10 @@ ShellRoot {
 
     LockScreen {}
 
+    // Singletons load on first use, and nothing else reads this one until
+    // the Sound page opens.
+    readonly property bool ducking: Ducking.ducked
+
     // For keybinds:
     //   qs ipc call drawer toggle quick        (or calendar, notifications, devices, media)
     //   qs ipc call drawer page quick wifi     (wifi | bluetooth | audio)
@@ -151,6 +155,23 @@ ShellRoot {
 
         function test(): void {
             Prayer.test();
+        }
+    }
+
+    //   qs ipc call ducking toggle               (or on, off: lower media for alert sounds)
+    IpcHandler {
+        target: "ducking"
+
+        function toggle(): void {
+            Ducking.setEnabled(!Ducking.enabled);
+        }
+
+        function on(): void {
+            Ducking.setEnabled(true);
+        }
+
+        function off(): void {
+            Ducking.setEnabled(false);
         }
     }
 }

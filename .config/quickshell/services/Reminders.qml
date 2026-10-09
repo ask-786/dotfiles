@@ -366,7 +366,7 @@ Singleton {
     // Saved by the caller.
     function _fire(r, missed) {
         alerts = alerts.concat([Object.assign({}, r, { key: _newId(), missed })]);
-        Quickshell.execDetached(["paplay", "/usr/share/sounds/freedesktop/stereo/message-new-instant.oga"]);
+        Quickshell.execDetached(["paplay", "--property=media.role=event", "/usr/share/sounds/freedesktop/stereo/message-new-instant.oga"]);
     }
 
     function _notifyLow(title, body) {
