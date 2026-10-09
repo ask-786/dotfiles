@@ -1,6 +1,6 @@
 # IR face unlock (Dell laptop)
 
-Windows Hello-style face unlock for hyprlock and sudo, using the laptop's IR camera.
+Windows Hello-style face unlock for the lock screen and sudo, using the laptop's IR camera.
 Built from [howdy-next](https://codeberg.org/nathawat/howdy-next) and
 [linux-enable-ir-emitter](https://github.com/EmixamPP/linux-enable-ir-emitter) v7.
 
@@ -75,13 +75,14 @@ sudo install -m 644 etc/pam.d/hyprlock /etc/pam.d/hyprlock
 sudo install -m 644 etc/pam.d/sudo     /etc/pam.d/sudo
 ```
 
-**hyprlock:** the lock screen stays up until you press Enter.
+**Lock screen:** Quickshell's (hyprlock only as a fallback) uses `/etc/pam.d/hyprlock` too,
+and stays up until you press Enter.
 - Empty field + Enter: the emitter switches on and howdy checks your face.
 - Your password + Enter: unlocks right away.
 - A wrong password falls through to the face check.
 
 **sudo:** switch face unlock on or off with the fish function `faceid-sudo [on|off|status]`.
-It comments the two face lines in `/etc/pam.d/sudo` in or out. hyprlock isn't affected.
+It comments the two face lines in `/etc/pam.d/sudo` in or out. The lock screen isn't affected.
 
 These are copies: after editing `/etc/pam.d/`, copy the files back into the repo.
 
