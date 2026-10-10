@@ -1,0 +1,341 @@
+#!/usr/bin/env python3
+"""Set default apps (xdg-open, file managers, browsers) from ~/.config/default-apps.conf.
+
+  set-default-apps                apply the config to ~/.config/mimeapps.list
+  set-default-apps -i [CAT...]    pick apps interactively (all categories, or just CAT),
+                                  save the picks to the config, then apply
+  set-default-apps -n             dry run: show what would be set
+
+The config lists, per category, desktop files in order of preference; the first one
+installed on this machine wins, so one config works across distros. Entries in
+mimeapps.list for types no category owns (e.g. x-scheme-handler/claude-cli) are kept.
+"""
+
+import argparse
+import fnmatch
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+HOME = Path.home()
+CONFIG_HOME = Path(os.environ.get("XDG_CONFIG_HOME") or HOME / ".config")
+DATA_HOME = Path(os.environ.get("XDG_DATA_HOME") or HOME / ".local/share")
+DATA_DIRS = [Path(p) for p in (os.environ.get("XDG_DATA_DIRS") or "/usr/local/share:/usr/share").split(":") if p]
+
+CONF = CONFIG_HOME / "default-apps.conf"
+MIMEAPPS = CONFIG_HOME / "mimeapps.list"
+TERMINALS = CONFIG_HOME / "xdg-terminals.list"
+
+BROWSER_TYPES = [
+    "x-scheme-handler/http", "x-scheme-handler/https", "x-scheme-handler/chrome",
+    "text/html", "application/xhtml+xml",
+    "application/x-extension-htm", "application/x-extension-html", "application/x-extension-shtml",
+    "application/x-extension-xhtml", "application/x-extension-xht",
+]
+
+# probe:   an app is offered for the category if it declares any of these types
+# scope:   "fixed" = always set exactly `types`
+#          "app"   = the types the chosen app declares that match `types`
+#          "all"   = every known type matching `types` (the editor gets text/* even if
+#                    its desktop file only lists a few)
+# types:   globs the category owns; `exclude` carves out types another category owns
+CATEGORIES = {
+    "browser": dict(label="Web browser", probe=["x-scheme-handler/https"], scope="fixed", types=BROWSER_TYPES),
+    "image": dict(label="Image viewer", probe=["image/png", "image/jpeg"], scope="app",
+                  types=["image/*"], exclude=["image/vnd.djvu*"]),
+    "video": dict(label="Video player", probe=["video/mp4", "video/x-matroska"], scope="app",
+                  types=["video/*", "application/x-matroska", "application/vnd.rn-realmedia",
+                         "application/x-flash-video", "application/mxf", "application/vnd.ms-asf"]),
+    "audio": dict(label="Audio player", probe=["audio/mpeg", "audio/flac"], scope="app",
+                  types=["audio/*", "application/ogg", "application/x-ogg", "application/x-cue"]),
+    "document": dict(label="PDF / ebook viewer", probe=["application/pdf"], scope="app",
+                     types=["application/pdf", "application/oxps", "application/epub+zip",
+                            "application/x-fictionbook*", "application/x-mobipocket-ebook",
+                            "application/postscript", "image/vnd.djvu*", "application/x-cb?",
+                            "application/vnd.comicbook*"]),
+    "text": dict(label="Text editor", probe=["text/plain"], scope="all",
+                 types=["text/*", "application/json", "application/x-shellscript", "application/x-yaml",
+                        "application/yaml", "application/toml", "application/xml", "application/javascript",
+                        "application/x-perl", "application/x-ruby", "application/sql", "application/x-desktop"],
+                 exclude=BROWSER_TYPES),
+    "files": dict(label="File manager", probe=["inode/directory"], scope="fixed", types=["inode/directory"]),
+    "archive": dict(label="Archive manager", probe=["application/zip", "application/x-tar"], scope="app",
+                    types=["application/zip", "application/x-tar", "application/x-*compressed*", "application/gzip",
+                           "application/x-7z-compressed", "application/vnd.rar", "application/x-rar",
+                           "application/x-xz", "application/x-bzip*", "application/zstd", "application/x-zstd*",
+                           "application/x-lzma", "application/x-cpio", "application/x-archive"]),
+    # Not a MIME type: written to xdg-terminals.list, which xdg-terminal-exec (and GLib,
+    # through it) uses to launch Terminal=true apps such as nvim.
+    "terminal": dict(label="Terminal", probe=[], scope="terminal", types=[]),
+}
+
+
+def warn(msg):
+    print(f"set-default-apps: {msg}", file=sys.stderr)
+
+
+def match(mime, patterns):
+    return any(fnmatch.fnmatchcase(mime, p) for p in patterns)
+
+
+# --- desktop files ----------------------------------------------------------------
+
+def read_entry(path):
+    """The [Desktop Entry] group of a desktop file as a dict (actions are ignored)."""
+    entry, in_group = {}, False
+    try:
+        lines = path.read_text(errors="replace").splitlines()
+    except OSError:
+        return None
+    for line in lines:
+        line = line.strip()
+        if line.startswith("["):
+            in_group = line == "[Desktop Entry]"
+        elif in_group and "=" in line and not line.startswith("#"):
+            key, _, value = line.partition("=")
+            entry.setdefault(key.strip(), value.strip())
+    return entry
+
+
+def installed_apps():
+    """desktop-file id -> entry, with user overrides shadowing system files."""
+    apps = {}
+    for base in [DATA_HOME, *DATA_DIRS]:
+        root = base / "applications"
+        if not root.is_dir():
+            continue
+        for path in sorted(root.rglob("*.desktop")):
+            app_id = str(path.relative_to(root)).replace("/", "-")
+            if app_id in apps:
+                continue
+            entry = read_entry(path)
+            if entry is None:
+                continue
+            apps[app_id] = entry
+    return {k: v for k, v in apps.items() if v.get("Hidden", "").lower() != "true"}
+
+
+def declared_types(entry):
+    return [t for t in entry.get("MimeType", "").split(";") if t]
+
+
+def known_types():
+    types = set()
+    for base in [DATA_HOME, *DATA_DIRS]:
+        try:
+            types.update(t for t in (base / "mime/types").read_text().split() if "/" in t)
+        except OSError:
+            pass
+    return types
+
+
+def candidates(cat, apps):
+    spec = CATEGORIES[cat]
+    if spec["scope"] == "terminal":
+        return sorted(a for a, e in apps.items()
+                      if "TerminalEmulator" in e.get("Categories", "").split(";")
+                      and e.get("NoDisplay", "").lower() != "true")
+    found = []
+    for app_id, entry in apps.items():
+        declared = declared_types(entry)
+        if any(fnmatch.fnmatchcase(probe, d) for probe in spec["probe"] for d in declared):
+            found.append(app_id)
+    return sorted(found, key=lambda a: apps[a].get("Name", a).lower())
+
+
+def types_for(cat, entry, known):
+    spec = CATEGORIES[cat]
+    owned, excluded = spec["types"], spec.get("exclude", [])
+    if spec["scope"] == "fixed":
+        return list(owned)
+    declared = declared_types(entry)
+    if spec["scope"] == "all":
+        pool = known | {d for d in declared if "*" not in d}
+    else:
+        # A declared glob such as image/* is expanded against the MIME database.
+        pool = {d for d in declared if "*" not in d}
+        pool |= {t for t in known for d in declared if "*" in d and fnmatch.fnmatchcase(t, d)}
+    return sorted(t for t in pool if match(t, owned) and not match(t, excluded))
+
+
+# --- config -------------------------------------------------------------------------
+
+def read_conf():
+    conf = {}
+    if not CONF.exists():
+        return conf
+    for line in CONF.read_text().splitlines():
+        line = line.split("#", 1)[0].strip()
+        if "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        if key not in CATEGORIES:
+            warn(f"{CONF}: unknown category '{key}'")
+            continue
+        conf[key] = value.split()
+    return conf
+
+
+def write_conf(conf):
+    out = ["# Default apps, applied by set-default-apps (run `set-default-apps -i` to pick).",
+           "# Per category: desktop files in order of preference; the first one installed wins.", ""]
+    width = max(map(len, CATEGORIES))
+    for cat in CATEGORIES:
+        out.append(f"{cat:<{width}} = {' '.join(conf.get(cat, []))}".rstrip())
+    # Write in place so a stow symlink stays a symlink.
+    with open(CONF, "w") as f:
+        f.write("\n".join(out) + "\n")
+
+
+def resolve(conf, apps):
+    """category -> the first installed app from the config."""
+    chosen = {}
+    for cat in CATEGORIES:
+        prefs = conf.get(cat, [])
+        app = next((a for a in prefs if a in apps), None)
+        if app:
+            chosen[cat] = app
+        elif prefs:
+            warn(f"{cat}: none of {', '.join(prefs)} is installed, skipping")
+    return chosen
+
+
+# --- wizard ------------------------------------------------------------------------
+
+def pick(cat, apps, current):
+    options = candidates(cat, apps)
+    label = CATEGORIES[cat]["label"]
+    if not options:
+        print(f"{label}: no installed app handles this, skipping")
+        return None
+    if current in options:
+        options.remove(current)
+        options.insert(0, current)
+    lines = [f"{apps[a].get('Name', a)}\t{a}" + ("\t(current)" if a == current else "") for a in options]
+
+    if shutil.which("fzf"):
+        result = subprocess.run(
+            ["fzf", "--delimiter=\t", "--with-nth=1..", "--height=~50%", "--reverse",
+             f"--header={label}  (enter: choose, esc: keep current)", "--prompt=> "],
+            input="\n".join(lines), stdout=subprocess.PIPE, text=True)
+        if result.returncode != 0 or not result.stdout.strip():
+            return None
+        return result.stdout.split("\t")[1].strip()
+
+    print(f"\n{label}:")
+    for i, line in enumerate(lines, 1):
+        print(f"  {i}) {line.replace(chr(9), '  ')}")
+    try:
+        answer = input("number (enter keeps current): ").strip()
+    except EOFError:
+        return None
+    if answer.isdigit() and 1 <= int(answer) <= len(options):
+        return options[int(answer) - 1]
+    return None
+
+
+def wizard(conf, apps, only):
+    for cat in only or CATEGORIES:
+        current = resolve({cat: conf.get(cat, [])}, apps).get(cat)
+        choice = pick(cat, apps, current)
+        if choice:
+            conf[cat] = [choice] + [a for a in conf.get(cat, []) if a != choice]
+            print(f"{CATEGORIES[cat]['label']}: {apps[choice].get('Name', choice)} ({choice})")
+    write_conf(conf)
+
+
+# --- apply -------------------------------------------------------------------------
+
+def read_mimeapps():
+    """Sections in file order, each an ordered dict of key -> value."""
+    sections, current = {}, None
+    if MIMEAPPS.exists():
+        for line in MIMEAPPS.read_text().splitlines():
+            line = line.strip()
+            if line.startswith("[") and line.endswith("]"):
+                current = sections.setdefault(line[1:-1], {})
+            elif current is not None and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                current[key.strip()] = value.strip()
+    return sections
+
+
+def write_mimeapps(sections):
+    out = []
+    for name, entries in sections.items():
+        out.append(f"[{name}]")
+        out += [f"{k}={v}" for k, v in entries.items()]
+        out.append("")
+    with open(MIMEAPPS, "w") as f:
+        f.write("\n".join(out))
+
+
+def apply(conf, apps, dry_run):
+    chosen = resolve(conf, apps)
+    known = known_types()
+    assignments = {}
+    for cat, app in chosen.items():
+        if CATEGORIES[cat]["scope"] == "terminal":
+            continue
+        types = types_for(cat, apps[app], known)
+        for t in types:
+            assignments[t] = app
+        print(f"{CATEGORIES[cat]['label']:<20} {app}  ({len(types)} types)")
+
+    terminal = chosen.get("terminal")
+    if terminal:
+        print(f"{CATEGORIES['terminal']['label']:<20} {terminal}  (xdg-terminals.list)")
+        if not shutil.which("xdg-terminal-exec"):
+            warn("xdg-terminal-exec is not installed; Terminal=true apps (nvim) may not open from xdg-open")
+
+    if dry_run:
+        return
+
+    # Drop every default a managed category owns, so switching apps leaves nothing stale;
+    # anything else (custom scheme handlers etc.) is kept as is.
+    sections = read_mimeapps()
+    defaults = sections.setdefault("Default Applications", {})
+    owned = [p for cat in chosen for p in CATEGORIES[cat]["types"]]
+    for key in [k for k in defaults if match(k, owned)]:
+        del defaults[key]
+    defaults.update(sorted(assignments.items()))
+    sections = {"Default Applications": defaults, **{k: v for k, v in sections.items() if k != "Default Applications"}}
+    write_mimeapps(sections)
+
+    if terminal:
+        TERMINALS.write_text(terminal + "\n")
+
+    if shutil.which("update-desktop-database"):
+        subprocess.run(["update-desktop-database", str(DATA_HOME / "applications")], stderr=subprocess.DEVNULL)
+    print(f"wrote {MIMEAPPS}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("-i", "--interactive", action="store_true", help="pick apps, save them, then apply")
+    parser.add_argument("-n", "--dry-run", action="store_true", help="show what would be set")
+    parser.add_argument("categories", nargs="*", metavar="CAT",
+                        help=f"categories for -i ({', '.join(CATEGORIES)}); default all")
+    args = parser.parse_args()
+
+    unknown = [c for c in args.categories if c not in CATEGORIES]
+    if unknown:
+        parser.error(f"unknown category: {', '.join(unknown)}")
+    if args.categories and not args.interactive:
+        parser.error("categories only apply with -i")
+
+    apps = installed_apps()
+    conf = read_conf()
+    if args.interactive:
+        wizard(conf, apps, args.categories)
+    apply(conf, apps, args.dry_run)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(130)  # nothing is written until every pick is made
