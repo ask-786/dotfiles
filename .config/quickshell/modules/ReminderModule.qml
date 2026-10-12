@@ -17,6 +17,7 @@ BarModule {
 
     SystemClock {
         id: clock
+        enabled: !Sleep.sleeping // re-read the time on wake
         precision: SystemClock.Minutes
     }
 

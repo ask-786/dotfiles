@@ -139,6 +139,7 @@ Drawer {
             // Small clock, handy while the bar is hidden over fullscreen windows.
             SystemClock {
                 id: clock
+                enabled: !Sleep.sleeping // re-read the time on wake
                 precision: SystemClock.Minutes
             }
 

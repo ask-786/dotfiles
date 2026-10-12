@@ -318,6 +318,11 @@ Singleton {
         onTriggered: root._tick()
     }
 
+    Connections {
+        target: Sleep
+        function onWoke() { root._tick(); }
+    }
+
     Process {
         id: player
     }

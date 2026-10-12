@@ -24,6 +24,7 @@ Item {
 
     SystemClock {
         id: clock
+        enabled: !Sleep.sleeping // re-read the time on wake
         // Seconds only while a timer counts down.
         precision: root.timers.some(r => !r.paused) ? SystemClock.Seconds : SystemClock.Minutes
     }

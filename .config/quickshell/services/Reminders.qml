@@ -440,6 +440,11 @@ Singleton {
         onTriggered: root._check()
     }
 
+    Connections {
+        target: Sleep
+        function onWoke() { root._check(); }
+    }
+
     Component {
         id: parser
 
