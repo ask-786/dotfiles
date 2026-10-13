@@ -61,9 +61,10 @@ ShellRoot {
 
     LockScreen {}
 
-    // Singletons load on first use, and nothing else reads this one until
-    // the Sound page opens.
+    // Singletons load on first use, and nothing else reads these: Ducking
+    // until the Sound page opens, Usb ever.
     readonly property bool ducking: Ducking.ducked
+    readonly property bool usb: Usb.watching
 
     // For keybinds:
     //   qs ipc call drawer toggle quick        (or calendar, notifications, devices, media)
