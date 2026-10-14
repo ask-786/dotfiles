@@ -120,7 +120,9 @@ def main():
     where = cwd.replace(os.path.expanduser("~"), "~", 1)
     title = session_title(data.get("transcript_path")) or os.path.basename(cwd) or "Claude Code"
 
-    if kind == "attention" and data.get("message"):
+    if kind == "attention" and not data.get("message"):
+        return  # end-of-task duplicate; Stop hook already covers this
+    if kind == "attention":
         body = data["message"]
     elif kind == "question":
         try:
