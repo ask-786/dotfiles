@@ -82,6 +82,14 @@ Singleton {
     // can't raise themselves from the action. Notifications from no app
     // (notify-send, scripts) just leave the popup.
     function activate(n) {
+        const wsId = parseInt(n.hints["x-qs-workspace"]);
+        if (wsId > 0) {
+            Hyprland.dispatch(`hl.dsp.focus({ workspace = ${wsId} })`);
+            Panels.close();
+            if (n.tracked) dismiss(n);
+            else hidePopup(n);
+            return;
+        }
         let invoked = false;
         for (let i = 0; i < n.actions.length; i++) {
             if (n.actions[i].identifier === "default") {

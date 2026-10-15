@@ -80,6 +80,21 @@ Item {
             Component.onCompleted: if (isActive) root.activeItem = ws
             Component.onDestruction: if (root.activeItem === ws) root.activeItem = null
 
+            onUrgentChanged: {
+                if (urgent && !isActive) {
+                    Quickshell.execDetached([
+                        "notify-send",
+                        "-a", "Workspaces",
+                        "-h", "boolean:transient:true",
+                        "-h", `string:x-qs-workspace:${ws.modelData.id}`,
+                        "-h", `string:x-dunst-stack-tag:workspace-${ws.modelData.id}`,
+                        "-i", "view-paged-symbolic",
+                        `Workspace ${ws.modelData.name}`,
+                        "New activity"
+                    ]);
+                }
+            }
+
             // Pop-in lives here, not in the view's add/remove transitions:
             // moving to a new workspace creates it and destroys the empty one
             // we left in the same frame, and with view transitions running the
