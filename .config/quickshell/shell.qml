@@ -70,6 +70,7 @@ ShellRoot {
     //   qs ipc call drawer toggle quick        (or calendar, notifications, devices, media)
     //   qs ipc call drawer page quick wifi     (wifi | bluetooth | audio)
     //   qs ipc call drawer page calendar reminders   (new reminder form)
+    //   qs ipc call drawer powermenu           (open quick settings with power row expanded)
     IpcHandler {
         target: "drawer"
 
@@ -83,6 +84,11 @@ ShellRoot {
 
         function close(): void {
             Panels.close();
+        }
+
+        function powermenu(): void {
+            Panels.powerMenu = true;
+            Panels.toggle("quick", Hyprland.focusedMonitor?.name ?? "");
         }
     }
 

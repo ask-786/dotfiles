@@ -34,9 +34,14 @@ Drawer {
     onOpenChanged: {
         if (open) {
             page = Panels.page;
+            if (Panels.powerMenu) {
+                powerMenu = true;
+                Panels.powerMenu = false;
+            }
         } else {
             page = "";
             powerMenu = false;
+            Panels.powerMenu = false;
         }
     }
 

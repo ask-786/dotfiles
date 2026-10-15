@@ -13,6 +13,7 @@ hl.bind(mod("Q"), hl.dsp.window.close())
 hl.bind(mod("E"), hl.dsp.exec_cmd(global.fileManager))
 hl.bind(mod("D"), hl.dsp.exec_cmd(global.menu))
 hl.bind(mod("A"), hl.dsp.exec_cmd("qs ipc call drawer toggle quick")) -- quickshell quick settings
+hl.bind("XF86PowerOff", hl.dsp.exec_cmd("qs ipc call drawer powermenu"), { locked = true }) -- power button → QS power menu
 hl.bind(mod("M"), hl.dsp.exec_cmd("qs ipc call drawer toggle media")) -- quickshell media panel
 hl.bind(mod("R"), hl.dsp.exec_cmd("qs ipc call drawer page calendar reminders")) -- quickshell new reminder
 hl.bind(mod("N"), hl.dsp.exec_cmd("qs ipc call drawer toggle notifications")) -- quickshell notifications
@@ -140,7 +141,7 @@ hl.bind(
 	{ locked = true, repeating = true }
 )
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl s 10%+"), { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl s 10%-"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -n1920 s 10%-"), { locked = true, repeating = true })
 
 -- Requires playerctl
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })

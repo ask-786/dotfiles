@@ -12,6 +12,7 @@ Singleton {
     property bool devices: false
     property string screen: ""
     property string page: "" // sub-page to open on, e.g. "wifi"
+    property bool powerMenu: false
 
     readonly property bool any: open !== "" || media || devices
 
@@ -43,5 +44,6 @@ Singleton {
         open = "";
         media = false;
         devices = false;
+        powerMenu = false;
     }
 }
