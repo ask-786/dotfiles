@@ -9,12 +9,12 @@ import qs
 Singleton {
     id: root
 
-    readonly property var wifiDevice: Networking.devices.values.find(d => d.type === DeviceType.Wifi) ?? null
-    readonly property bool wired: Networking.devices.values.some(d => d.type === DeviceType.Wired && d.connected)
-    readonly property var active: wifiDevice?.networks.values.find(n => n.connected) ?? null
+    readonly property var wifiDevice: (Networking.devices?.values ?? []).find(d => d.type === DeviceType.Wifi) ?? null
+    readonly property bool wired: (Networking.devices?.values ?? []).some(d => d.type === DeviceType.Wired && d.connected)
+    readonly property var active: wifiDevice?.networks?.values?.find(n => n.connected) ?? null
     readonly property bool wifiEnabled: Networking.wifiEnabled
 
-    readonly property var networks: (wifiDevice?.networks.values ?? [])
+    readonly property var networks: (wifiDevice?.networks?.values ?? [])
         .filter(n => n.name)
         .sort((a, b) => (b.connected - a.connected) || (b.known - a.known) || (b.signalStrength - a.signalStrength))
 
