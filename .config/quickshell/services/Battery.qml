@@ -47,10 +47,19 @@ Singleton {
     readonly property bool _live: available && (dev?.ready ?? false) && dev.energyCapacity > 0
     property int _warned: 101
     property string _notifId: ""
+    property bool _initialized: false
 
     onPercentChanged: _checkLow()
-    onPluggedChanged: _checkLow()
-    on_LiveChanged: _checkLow()
+    onPluggedChanged: {
+        _checkLow();
+        _onPluggedChanged();
+    }
+    on_LiveChanged: {
+        _checkLow();
+        if (_live && !_initialized)
+            _initialized = true;
+    }
+    onFullChanged: _onFullChanged()
 
     function _checkLow() {
         if (!_live)
@@ -74,6 +83,23 @@ Singleton {
             "-h", "string:x-dunst-stack-tag:battery", w.title, body];
         notify.running = true;
         Quickshell.execDetached(["paplay", "--property=media.role=event", `/usr/share/sounds/freedesktop/stereo/${w.sound}.oga`]);
+    }
+
+    function _onPluggedChanged() {
+        if (!_live || !_initialized)
+            return;
+        const snd = plugged ? "power-plug" : "power-unplug";
+        Quickshell.execDetached(["paplay", "--property=media.role=event",
+            `/usr/share/sounds/freedesktop/stereo/${snd}.oga`]);
+    }
+
+    function _onFullChanged() {
+        if (!_live || !_initialized || !full)
+            return;
+        Quickshell.execDetached(["paplay", "--property=media.role=event",
+            "/usr/share/sounds/freedesktop/stereo/complete.oga"]);
+        Quickshell.execDetached(["notify-send", "-a", "Battery", "-u", "low",
+            "-i", "battery-full-charged", "Battery fully charged", `${percent}%`]);
     }
 
     Process {
