@@ -100,6 +100,7 @@ def notify_and_wait(urgency, title, body, chain):
     for fd in (0, 1, 2):
         os.dup2(devnull, fd)  # don't hold the hook's pipes open
     clicked = run("notify-send", "-u", urgency, "-a", "Claude Code",
+                  "--hint=boolean:transient:true",
                   "--action=default=Focus", "--wait", title, body).strip()
     if clicked == "default":
         pane = os.environ.get("TMUX_PANE")
