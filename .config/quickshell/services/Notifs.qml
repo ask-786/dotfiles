@@ -4,7 +4,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.Notifications
-import Quickshell.Wayland
 
 // The notification daemon (replaces dunst). Every notification stays in
 // `list`, the history shown above quick settings, until it's dismissed there
@@ -113,16 +112,13 @@ Singleton {
         const names = [n.desktopEntry, entry?.id, entry?.startupClass, n.appName].map(norm).filter(s => s && s !== "notify-send");
         if (names.length === 0)
             return false;
-        const win = ToplevelManager.toplevels.values.find(t => names.includes(norm(t.appId)));
+        // Match via h.wayland.appId string comparison instead of h.wayland ===
+        // win: identity comparison breaks because QML may give a fresh JS
+        // wrapper for the same C++ pointer on each property read.
+        const win = Hyprland.toplevels.values.find(h => h.wayland && names.includes(norm(h.wayland.appId)));
         if (win) {
-            // Hyprland ignores toplevel activate requests (unless
-            // focus_on_activate is set); its own focus also switches to the
-            // window's workspace.
-            const addr = Hyprland.toplevels.values.find(h => h.wayland === win)?.address;
-            if (addr)
-                Hyprland.dispatch(`hl.dsp.focus({ window = "address:${addr.startsWith("0x") ? addr : "0x" + addr}" })`);
-            else
-                win.activate();
+            const addr = win.address.startsWith("0x") ? win.address : "0x" + win.address;
+            Hyprland.dispatch(`hl.dsp.focus({ window = "address:${addr}" })`);
             return true;
         }
         if (launch && entry) {
