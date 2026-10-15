@@ -21,7 +21,7 @@ Singleton {
     readonly property real level: 0.6
     readonly property var alertRoles: ["notification", "event", "alarm"]
 
-    readonly property var streams: Pipewire.nodes.values.filter(n => n.type === PwNodeType.AudioOutStream)
+    readonly property var streams: (Pipewire.nodes?.values ?? []).filter(n => n.type === PwNodeType.AudioOutStream)
     readonly property bool alerting: streams.some(isAlert)
     readonly property bool ducked: Object.keys(saved).length > 0
 
