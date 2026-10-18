@@ -3,29 +3,26 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Quickshell.Services.Pipewire
 
 // Volume of alert sounds: app notification sounds, our reminder, battery
 // and device chimes, the adhan. They all play with media.role Notification
 // (paplay's "event" maps onto it), and WirePlumber applies one saved level
-// to every such stream. It only saves a level set on a playing stream, so
-// setting one plays a preview chime and turns that to the new level, which
-// is also how you hear it. The level is read back from WirePlumber's state
-// file, so changes made elsewhere (pavucontrol) show too.
+// to every such stream. It saves the level a new stream asks for, so
+// setting one plays a preview chime at that level, which is also how you
+// hear it. The level is read back from WirePlumber's state file, so changes
+// made elsewhere (pavucontrol) show too.
 Singleton {
     id: root
 
     // 0..1 on the wpctl scale; 1 until WirePlumber has saved anything.
     property real volume: 1
     property bool muted: false
-    // Level the preview chime is being turned to, or -1.
+    // Level the preview chime plays at, or -1.
     property real target: -1
+    property bool _replay: false
 
     readonly property string path: `${Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state"}/wireplumber/stream-properties`
     readonly property string sound: "/usr/share/sounds/freedesktop/stereo/message-new-instant.oga"
-
-    readonly property var streams: (Pipewire.nodes?.values ?? []).filter(n => n.type === PwNodeType.AudioOutStream)
-    readonly property var preview: streams.find(n => n.properties?.["quickshell.preview"] === "alert-volume") ?? null
 
     function setVolume(v) {
         target = Math.max(0, Math.min(1, v));
@@ -37,14 +34,6 @@ Singleton {
     // Replays the chime at the current level.
     function test() {
         setVolume(volume);
-    }
-
-    function _apply() {
-        if (!preview)
-            return;
-        Quickshell.execDetached(["wpctl", "set-volume", `${preview.id}`, target.toFixed(3)]);
-        if (preview.audio?.muted)
-            Quickshell.execDetached(["wpctl", "set-mute", `${preview.id}`, "0"]);
     }
 
     // The file stores linear channel volumes; wpctl shows their cube root.
@@ -65,44 +54,34 @@ Singleton {
         }
     }
 
-    // WirePlumber restores the old level on the new stream, maybe after we
-    // set ours; set it again whenever it differs.
-    onPreviewChanged: if (preview && target >= 0) _apply()
-
-    Connections {
-        target: root.preview?.audio ?? null
-
-        function onVolumeChanged() {
-            if (root.target >= 0 && Math.abs(root.preview.audio.volume - root.target) > 0.005)
-                root._apply();
-        }
-    }
-
-    // Properties and volume are only live while something tracks the node;
-    // the preview can't be told apart until then.
-    PwObjectTracker {
-        objects: root.streams
-    }
-
     // Slider drags and scrolls settle before the chime plays; a change while
-    // it plays goes straight to it.
+    // it plays restarts it at the new level.
     Timer {
         id: settle
         interval: 250
         onTriggered: {
-            if (root.preview)
-                root._apply();
-            else if (chime.running)
-                restart();
-            else
+            if (chime.running) {
+                root._replay = true;
+                chime.running = false;
+            } else {
                 chime.running = true;
+            }
         }
     }
 
+    // WirePlumber leaves a stream that sets its own volume alone (no jump
+    // from the old level) and saves that volume for the role. paplay's
+    // volume is on the same scale as wpctl's, 65536 = 100%. The tag keeps
+    // Ducking from lowering media for it.
     Process {
         id: chime
-        command: ["paplay", "--property=media.role=event", "--property=quickshell.preview=alert-volume", root.sound]
+        command: ["paplay", "--property=media.role=event", "--property=quickshell.preview=alert-volume", `--volume=${Math.round(Math.max(root.target, 0) * 65536)}`, root.sound]
         onExited: {
+            if (root._replay) {
+                root._replay = false;
+                running = true;
+                return;
+            }
             root.target = -1;
             file.reload();
         }
