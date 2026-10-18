@@ -22,7 +22,9 @@ Singleton {
     readonly property var alertRoles: ["notification", "event", "alarm"]
 
     readonly property var streams: (Pipewire.nodes?.values ?? []).filter(n => n.type === PwNodeType.AudioOutStream)
-    readonly property bool alerting: streams.some(isAlert)
+    // The alert volume slider's preview chime is left out, so media doesn't
+    // dip on every drag.
+    readonly property bool alerting: streams.some(n => isAlert(n) && n.properties["quickshell.preview"] === undefined)
     readonly property bool ducked: Object.keys(saved).length > 0
 
     // Node id → { volume, ducked } for each stream turned down.
