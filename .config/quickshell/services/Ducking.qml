@@ -64,11 +64,13 @@ Singleton {
     }
 
     // Only streams playing when the alert starts; one that starts meanwhile
-    // has no settled level to restore yet.
+    // has no settled level to restore yet. A node shows up unbound (no role,
+    // volume 0) and drops back to that as it goes, so an unready one could be
+    // another alert, and setting it would save its level as the role's.
     function _duck() {
         const next = Object.assign({}, saved);
         for (const n of streams) {
-            if (isAlert(n) || !n.audio || next[n.id])
+            if (!n.ready || isAlert(n) || !n.audio || next[n.id])
                 continue;
             const back = restored[n.id];
             const volume = back && Date.now() - back.at < 1000 ? back.volume : n.audio.volume;
@@ -85,7 +87,7 @@ Singleton {
         for (const id in saved) {
             const n = streams.find(s => s.id === Number(id));
             const s = saved[id];
-            if (n?.audio && Math.abs(n.audio.volume - s.ducked) < 0.01) {
+            if (n?.ready && n.audio && Math.abs(n.audio.volume - s.ducked) < 0.01) {
                 Quickshell.execDetached(["wpctl", "set-volume", id, s.volume.toFixed(3)]);
                 back[id] = { volume: s.volume, at: Date.now() };
             }
