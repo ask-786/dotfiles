@@ -922,6 +922,16 @@ Drawer {
             topPadding: 6
         }
 
+        // Click the bell to hear the current level.
+        StyledSlider {
+            width: parent.width
+            icon: AlertVolume.muted || AlertVolume.volume <= 0 ? Icons.bellOff : Icons.bellRing
+            value: AlertVolume.muted ? 0 : AlertVolume.volume
+            dimmed: AlertVolume.muted || AlertVolume.volume <= 0
+            onMoved: v => AlertVolume.setVolume(v)
+            onIconClicked: AlertVolume.test()
+        }
+
         ListItem {
             width: parent.width
             icon: Icons.music
