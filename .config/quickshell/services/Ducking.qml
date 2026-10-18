@@ -27,6 +27,10 @@ Singleton {
 
     // Node id → { volume, ducked } for each stream turned down.
     property var saved: ({})
+    // Node id → { volume, at } for streams just turned back up. wpctl takes
+    // a moment, and an alert starting meanwhile would otherwise read the
+    // ducked level as the stream's own and restore to that.
+    property var restored: ({})
 
     readonly property string path: `${Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state"}/quickshell/ducking.json`
     property bool _loaded: false
@@ -64,8 +68,10 @@ Singleton {
         for (const n of streams) {
             if (isAlert(n) || !n.audio || next[n.id])
                 continue;
-            const ducked = n.audio.volume * level;
-            next[n.id] = { volume: n.audio.volume, ducked };
+            const back = restored[n.id];
+            const volume = back && Date.now() - back.at < 1000 ? back.volume : n.audio.volume;
+            const ducked = volume * level;
+            next[n.id] = { volume, ducked };
             Quickshell.execDetached(["wpctl", "set-volume", `${n.id}`, ducked.toFixed(3)]);
         }
         saved = next;
@@ -73,13 +79,17 @@ Singleton {
 
     // A level changed meanwhile (by hand, in the app) is left alone.
     function _restore() {
+        const back = {};
         for (const id in saved) {
             const n = streams.find(s => s.id === Number(id));
             const s = saved[id];
-            if (n?.audio && Math.abs(n.audio.volume - s.ducked) < 0.01)
+            if (n?.audio && Math.abs(n.audio.volume - s.ducked) < 0.01) {
                 Quickshell.execDetached(["wpctl", "set-volume", id, s.volume.toFixed(3)]);
+                back[id] = { volume: s.volume, at: Date.now() };
+            }
         }
         saved = {};
+        restored = back;
     }
 
     FileView {
