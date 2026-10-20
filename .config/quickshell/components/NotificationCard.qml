@@ -8,17 +8,22 @@ import qs.services
 // One notification: icon or image, app and age, summary, body and action
 // buttons. Clicking it runs its default action; × dismisses it. The popups
 // (`popup`, which pause their timeout while hovered) and the history panel
-// share it.
+// share it. A browser's notification shows as its site.
 Rectangle {
     id: root
 
     required property var notification
     property bool popup: false
+    // Off inside a group, whose header names the app.
+    property bool showApp: true
+    // Messages a popup stands for, shown as "3 new".
+    property int count: 1
 
     readonly property var n: notification
     readonly property bool critical: n?.urgency === NotificationUrgency.Critical
     readonly property bool low: n?.urgency === NotificationUrgency.Low
     readonly property string iconSource: Notifs.iconSource(n)
+    readonly property string label: Notifs.label(n)
 
     implicitHeight: Math.max(content.implicitHeight, iconBox.height) + 2 * Theme.padding
     radius: Theme.radius
@@ -85,14 +90,15 @@ Rectangle {
 
         StyledText {
             width: parent.width
-            text: [root.n?.appName ?? "", Notifs.age(root.n, clock.date.getTime())].filter(s => s).join(" · ")
+            text: [root.showApp ? root.label : "", root.count > 1 ? `${root.count} new` : "", Notifs.age(root.n, clock.date.getTime())].filter(s => s).join(" · ")
             color: root.critical ? Theme.fgDim : Theme.fgMuted
             font.pixelSize: Theme.fontSize - 2
         }
 
         StyledText {
             width: parent.width
-            visible: text !== ""
+            // Instagram's title is just "Instagram".
+            visible: text !== "" && text.toLowerCase() !== root.label.toLowerCase()
             text: root.n?.summary ?? ""
             color: root.low ? Theme.fgDim : Theme.fg
             font.bold: true
@@ -103,7 +109,7 @@ Rectangle {
         StyledText {
             width: parent.width
             visible: text !== ""
-            text: root.n?.body ?? ""
+            text: Notifs.body(root.n)
             textFormat: Text.StyledText
             color: root.critical ? Theme.fg : Theme.fgDim
             linkColor: Theme.accent

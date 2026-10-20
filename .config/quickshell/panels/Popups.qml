@@ -79,6 +79,7 @@ PanelWindow {
                 width: cards.width
                 notification: modelData
                 popup: true
+                count: Notifs.popupCount(modelData)
 
                 NumberAnimation on opacity {
                     from: 0

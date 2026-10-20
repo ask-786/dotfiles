@@ -4,8 +4,9 @@ import qs
 import qs.components
 import qs.services
 
-// Notification history, newest first, with do-not-disturb and Clear all.
-// Opened from the bell next to the quick settings button.
+// Notification history, grouped by app and chat (NotificationGroup), newest
+// first, with do-not-disturb and Clear all. Opened from the bell next to the
+// quick settings button.
 Drawer {
     id: root
 
@@ -64,15 +65,16 @@ Drawer {
             clip: true
             spacing: 6
             boundsBehavior: Flickable.StopAtBounds
+            // Keys, so a group keeps its delegate as it changes.
             model: ScriptModel {
-                values: Notifs.list.slice().reverse()
+                values: Notifs.groups.map(g => g.key)
             }
 
-            delegate: NotificationCard {
-                required property var modelData
+            delegate: NotificationGroup {
+                required property string modelData
 
                 width: ListView.view.width
-                notification: modelData
+                groupKey: modelData
             }
         }
     }

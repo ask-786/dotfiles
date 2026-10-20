@@ -10,14 +10,15 @@ import qs.services
 // What one monitor shows while locked: the blurred screen, the clock and
 // date above the password field (where hyprlock had them), and below it
 // anything that needs you: fired reminders, what's playing, running timers
-// and a one-line-each list of the latest notifications (no bodies or
-// actions while locked). The battery sits bottom right, like the bar.
+// and a one-line-each list of the latest chats and notifications (no bodies
+// or actions while locked). The battery sits bottom right, like the bar.
 Item {
     id: root
 
     required property var screen
     readonly property var timers: Reminders.items.filter(r => r.duration)
-    readonly property var notifications: Notifs.list.slice().reverse()
+    // A line per chat (Notifs threads), newest first.
+    readonly property var notifications: Array.prototype.concat.apply([], Notifs.groups.map(g => g.threads)).sort((a, b) => b.rank - a.rank).map(t => t.key)
     // Rows shown at once; the rest scroll.
     readonly property int maxNotifications: 5
     readonly property int columnWidth: 400
@@ -419,8 +420,8 @@ Item {
 
     // ----------------------------------------------------- notification list
 
-    // One panel, one line per notification: icon, app, summary, age. Shows
-    // maxNotifications rows and scrolls through the rest.
+    // One panel, one line per chat: picture, app, chat or summary, count
+    // and age. Shows maxNotifications rows and scrolls through the rest.
     component NotificationList: Rectangle {
         height: column.implicitHeight
         radius: Theme.radius
@@ -453,9 +454,13 @@ Item {
                 delegate: Item {
                     id: line
 
-                    required property var modelData
+                    required property string modelData
                     required property int index
-                    readonly property bool critical: modelData.urgency === NotificationUrgency.Critical
+                    readonly property var thread: Notifs.threadByKey[modelData] ?? null
+                    readonly property var latest: thread?.latest ?? null
+                    readonly property int count: thread?.items.length ?? 0
+                    readonly property string label: Notifs.label(latest)
+                    readonly property bool critical: latest?.urgency === NotificationUrgency.Critical
 
                     width: list.width
                     height: list.rowHeight
@@ -480,7 +485,7 @@ Item {
                             id: lineImage
 
                             anchors.fill: parent
-                            source: Notifs.iconSource(line.modelData)
+                            source: Notifs.iconSource(line.latest)
                             visible: source !== "" && status === Image.Ready
                             asynchronous: true
                             mipmap: true
@@ -502,7 +507,7 @@ Item {
                         anchors.leftMargin: 10
                         anchors.verticalCenter: parent.verticalCenter
                         width: Math.min(implicitWidth, 110)
-                        text: line.modelData.appName ?? ""
+                        text: line.label
                         color: line.critical ? Theme.red : Theme.fgMuted
                         font.pixelSize: Theme.fontSize - 1
                     }
@@ -513,7 +518,9 @@ Item {
                         anchors.right: age.left
                         anchors.rightMargin: 10
                         anchors.verticalCenter: parent.verticalCenter
-                        text: line.modelData.summary || line.modelData.body || ""
+                        // The chat, or the summary unless that's just the
+                        // app again (Instagram's is "Instagram").
+                        text: line.thread?.title || ((line.latest?.summary ?? "").toLowerCase() === line.label.toLowerCase() ? "" : line.latest?.summary ?? "")
                         textFormat: Text.PlainText
                     }
 
@@ -523,7 +530,7 @@ Item {
                         anchors.right: parent.right
                         anchors.rightMargin: Theme.padding
                         anchors.verticalCenter: parent.verticalCenter
-                        text: Notifs.age(line.modelData, clock.date.getTime())
+                        text: (line.count > 1 ? `${line.count} · ` : "") + Notifs.age(line.latest, clock.date.getTime())
                         color: Theme.fgMuted
                         font.pixelSize: Theme.fontSize - 2
                     }
@@ -536,7 +543,7 @@ Item {
                 x: Theme.padding
                 width: list.width - 2 * Theme.padding
                 height: 28
-                text: list.hidden > 0 ? `+${list.hidden} more` : `${list.count} notifications`
+                text: list.hidden > 0 ? `+${list.hidden} more` : `${Notifs.list.length} notifications`
                 color: Theme.fgMuted
                 font.pixelSize: Theme.fontSize - 2
             }
