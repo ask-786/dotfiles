@@ -35,7 +35,8 @@ Singleton {
     readonly property string shotDir: `${Quickshell.env("XDG_RUNTIME_DIR")}/quickshell-lock`
     // Monitors whose lock screen hasn't loaded its shot yet.
     property var _unloadedShots: []
-    // hyprpaper's wallpaper, in case a shot is missing.
+    // hyprpaper's wallpaper (as hypr/scripts/random-wallpaper.sh last set
+    // it), in case a shot is missing.
     property string wallpaper: ""
 
     property string _pending: ""
@@ -140,7 +141,7 @@ Singleton {
     FileView {
         id: wallpaperConf
 
-        path: `${Quickshell.env("HOME")}/.config/hypr/hyprpaper.conf`
+        path: `${Quickshell.env("XDG_CACHE_HOME") || Quickshell.env("HOME") + "/.cache"}/hypr/hyprpaper.conf`
         watchChanges: true
         printErrors: false
         onFileChanged: reload()
