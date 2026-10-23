@@ -22,11 +22,11 @@ Singleton {
     readonly property int seconds: charging ? dev?.timeToFull ?? 0 : dev?.timeToEmpty ?? 0
     readonly property int _h: Math.floor(seconds / 3600)
     readonly property int _m: Math.floor(seconds % 3600 / 60)
-    readonly property string timeText: seconds <= 0 ? "" : _h > 0 ? `${_h} h ${_m} min` : `${_m} min`
+    readonly property string timeText: seconds <= 0 ? "" : _h > 0 ? `${_h}h ${_m}m` : `${_m}m`
 
     readonly property string status: {
         if (charging)
-            return timeText ? `${timeText} until full` : "Charging";
+            return timeText ? `${timeText} to full` : "Charging";
         if (plugged)
             return full ? "Fully charged" : "Plugged in";
         return timeText ? `${timeText} left` : "On battery";

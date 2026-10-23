@@ -10,7 +10,7 @@ import Quickshell.Services.Pipewire
 // done. Alerts are streams with an alert media role: libcanberra and
 // notify sounds carry it, and our own players set it (pw-play --media-role
 // Notification, paplay --property=media.role=event). Silent notifications
-// play nothing, so they don't duck. The switch is on the Sound page, kept
+// play nothing, so they don't duck. The switch is on the Settings page, kept
 // in ~/.local/state.
 Singleton {
     id: root

@@ -10,7 +10,8 @@ import qs.components
 import qs.services
 
 // GNOME-style quick settings: battery + power, sliders, toggle tiles and
-// system stats. Wi-Fi, Bluetooth and Sound open detail pages that slide in.
+// system stats. Wi-Fi, Bluetooth and Sound open detail pages that slide in,
+// and so does Settings from the gear in the header.
 Drawer {
     id: root
 
@@ -18,7 +19,7 @@ Drawer {
     align: Qt.AlignRight
     contentWidth: 400
 
-    property string page: "" // "" = main, or "wifi" | "bluetooth" | "audio"
+    property string page: "" // "" = main, or "wifi" | "bluetooth" | "audio" | "settings"
     property string detail: "" // last detail page, kept while sliding back
     property bool powerMenu: false
 
@@ -98,7 +99,8 @@ Drawer {
                 width: pages.width
                 sourceComponent: root.detail === "wifi" ? wifiPage
                                : root.detail === "bluetooth" ? bluetoothPage
-                               : root.detail === "audio" ? audioPage : null
+                               : root.detail === "audio" ? audioPage
+                               : root.detail === "settings" ? settingsPage : null
             }
         }
     }
@@ -113,12 +115,20 @@ Drawer {
             width: parent.width
             height: 44
 
+            // Stops short of the clock; a long status elides.
             Row {
+                id: batteryRow
+
+                anchors.left: parent.left
+                anchors.right: clockColumn.left
+                anchors.rightMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
                 visible: Battery.available
 
                 Icon {
+                    id: batteryIcon
+
                     anchors.verticalCenter: parent.verticalCenter
                     text: Battery.icon
                     size: 28
@@ -127,6 +137,7 @@ Drawer {
 
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
+                    width: batteryRow.width - batteryIcon.width - batteryRow.spacing
 
                     StyledText {
                         text: `${Battery.percent}%`
@@ -134,6 +145,7 @@ Drawer {
                         font.bold: true
                     }
                     StyledText {
+                        width: parent.width
                         text: Battery.status
                         color: Theme.fgDim
                         font.pixelSize: Theme.fontSize - 2
@@ -149,6 +161,8 @@ Drawer {
             }
 
             Column {
+                id: clockColumn
+
                 anchors.right: headerButtons.left
                 anchors.rightMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
@@ -178,6 +192,10 @@ Drawer {
                     icon: Icons.devices
                     active: Panels.isOpen("devices", root.bar.screenName)
                     onClicked: Panels.toggle("devices", root.bar.screenName)
+                }
+                IconButton {
+                    icon: Icons.cog
+                    onClicked: root.go("settings")
                 }
                 IconButton {
                     icon: Icons.lock
@@ -509,6 +527,11 @@ Drawer {
     Component {
         id: audioPage
         AudioPage {}
+    }
+
+    Component {
+        id: settingsPage
+        SettingsPage {}
     }
 
     component WifiPage: Column {
@@ -932,6 +955,52 @@ Drawer {
             onIconClicked: AlertVolume.test()
         }
 
+        TextButton {
+            anchors.horizontalCenter: parent.horizontalCenter
+            icon: Icons.cog
+            text: "Sound settings"
+            onClicked: root.run(["pavucontrol"])
+        }
+    }
+
+    // Options that have no page of their own; the gear in the header.
+    component SettingsPage: Column {
+        spacing: 8
+
+        PageHeader {
+            width: parent.width
+            title: "Settings"
+            onBack: root.go("")
+        }
+
+        StyledText {
+            text: "Power"
+            color: Theme.fgDim
+            font.pixelSize: Theme.fontSize - 2
+            leftPadding: 4
+        }
+
+        ListItem {
+            width: parent.width
+            icon: Icons.sleep
+            title: "Stay awake while media plays"
+            subtitle: "Don't suspend after 30 min idle"
+            onClicked: Idle.setMediaAwake(!Idle.mediaAwake)
+
+            StyledSwitch {
+                checked: Idle.mediaAwake
+                onToggled: Idle.setMediaAwake(!checked)
+            }
+        }
+
+        StyledText {
+            text: "Sound"
+            color: Theme.fgDim
+            font.pixelSize: Theme.fontSize - 2
+            leftPadding: 4
+            topPadding: 6
+        }
+
         ListItem {
             width: parent.width
             icon: Icons.music
@@ -945,11 +1014,40 @@ Drawer {
             }
         }
 
-        TextButton {
-            anchors.horizontalCenter: parent.horizontalCenter
-            icon: Icons.cog
-            text: "Sound settings"
-            onClicked: root.run(["pavucontrol"])
+        StyledText {
+            text: "Prayer"
+            color: Theme.fgDim
+            font.pixelSize: Theme.fontSize - 2
+            leftPadding: 4
+            topPadding: 6
+        }
+
+        ListItem {
+            width: parent.width
+            icon: Icons.mosque
+            title: "Prayer times"
+            subtitle: "Calendar card and alerts"
+            onClicked: Prayer.setEnabled(!Prayer.enabled)
+
+            StyledSwitch {
+                checked: Prayer.enabled
+                onToggled: Prayer.setEnabled(!checked)
+            }
+        }
+
+        // The adhan, or just the popup.
+        ListItem {
+            width: parent.width
+            visible: Prayer.enabled
+            icon: Prayer.playAdhan ? Icons.volumeLevels[2] : Icons.volumeOff
+            title: "Play the adhan"
+            subtitle: Prayer.playAdhan ? "With the prayer popup" : "Popup only"
+            onClicked: Prayer.setPlayAdhan(!Prayer.playAdhan)
+
+            StyledSwitch {
+                checked: Prayer.playAdhan
+                onToggled: Prayer.setPlayAdhan(!checked)
+            }
         }
     }
 }

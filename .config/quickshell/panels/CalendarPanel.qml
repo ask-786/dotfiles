@@ -44,6 +44,16 @@ Drawer {
     property var places: [] // its results
     property string placesNote: "" // "Searching…", "No matches", ...
 
+    // Prayer times are switched on and off on the quick settings Settings
+    // page; an open location search closes with the card.
+    Connections {
+        target: Prayer
+
+        function onEnabledChanged() {
+            root.locating = false;
+        }
+    }
+
     readonly property int durationMinutes: timerHours.value * 60 + timerMinutes.value
     readonly property int hour24: hour.value % 12 + (pm ? 12 : 0)
 
@@ -663,6 +673,7 @@ Drawer {
         Rectangle {
             width: parent.width
             height: prayerContent.implicitHeight + 16
+            visible: Prayer.enabled
             radius: Theme.radius
             color: Theme.surface
 
@@ -684,7 +695,7 @@ Drawer {
                         anchors.verticalCenter: parent.verticalCenter
                         text: Icons.mosque
                         size: 16
-                        color: Prayer.enabled ? Theme.accent : Theme.fgMuted
+                        color: Theme.accent
                     }
 
                     StyledText {
@@ -696,39 +707,12 @@ Drawer {
                     }
 
                     StyledText {
-                        anchors.right: adhanButton.visible ? adhanButton.left : prayerSwitch.left
-                        anchors.rightMargin: 10
-                        anchors.verticalCenter: parent.verticalCenter
-                        visible: !root.nextPrayer
-                        text: !Prayer.enabled ? "Off" : !Prayer.location ? "" : Prayer.failed ? "Offline, retrying" : "Loading…"
-                        color: Theme.fgMuted
-                        font.pixelSize: Theme.fontSize - 1
-                    }
-
-                    // The adhan, or just the popup.
-                    IconButton {
-                        id: adhanButton
-
-                        anchors.right: prayerSwitch.left
-                        anchors.rightMargin: 6
-                        anchors.verticalCenter: parent.verticalCenter
-                        visible: Prayer.enabled
-                        size: 26
-                        icon: Prayer.playAdhan ? Icons.volumeLevels[2] : Icons.volumeOff
-                        idleColor: "transparent"
-                        onClicked: Prayer.setPlayAdhan(!Prayer.playAdhan)
-                    }
-
-                    StyledSwitch {
-                        id: prayerSwitch
-
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        checked: Prayer.enabled
-                        onToggled: {
-                            root.locating = false;
-                            Prayer.setEnabled(!checked);
-                        }
+                        visible: !root.nextPrayer
+                        text: !Prayer.location ? "" : Prayer.failed ? "Offline, retrying" : "Loading…"
+                        color: Theme.fgMuted
+                        font.pixelSize: Theme.fontSize - 1
                     }
                 }
 
@@ -897,7 +881,7 @@ Drawer {
             }
         }
 
-        Item { width: 1; height: 6 }
+        Item { width: 1; height: 6; visible: Prayer.enabled }
 
         Calendar {
             id: calendar

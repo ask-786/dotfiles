@@ -8,9 +8,10 @@ import Quickshell.Io
 // at a time and cached in ~/.local/state, so they keep working offline. At
 // each of the five prayers an alert pops up (next to the reminders' alerts,
 // see Popups.qml) and the adhan plays, unless the sound is turned off for
-// just the popup. The location is picked in the
-// calendar drawer (a city search, or a guess from the IP address) and saved
-// with the cache; the switch there turns all of it off, fetching included.
+// just the popup. The location is picked in the calendar drawer (a city
+// search, or a guess from the IP address) and saved with the cache. The
+// on/off and sound switches are on the quick settings Settings page; off
+// turns all of it off, fetching included.
 Singleton {
     id: root
 
