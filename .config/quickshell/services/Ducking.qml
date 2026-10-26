@@ -45,7 +45,7 @@ Singleton {
     // Their streams playing again at the ducked level. One at another level
     // was set since (or WirePlumber hasn't restored it yet) and is left be.
     readonly property var reopened: streams.filter(n => {
-        const p = n.ready && n.audio ? pending[appKey(n)] : undefined;
+        const p = n.ready && n.audio && !isAlert(n) ? pending[appKey(n)] : undefined;
         return p !== undefined && Math.abs(n.audio.volume - p.ducked) < 0.01;
     })
 
@@ -56,11 +56,12 @@ Singleton {
         return alertRoles.includes(String(n.properties["media.role"] ?? "").toLowerCase());
     }
 
-    // The key WirePlumber saves an app's level under.
+    // The key WirePlumber saves an app's level under (state-stream.lua's
+    // formKey; only alerts are keyed by role, and those aren't ducked).
     function appKey(n) {
-        for (const k of ["application.id", "application.name", "media.name"]) {
+        for (const k of ["application.id", "application.name", "media.name", "node.name"]) {
             const v = n.properties[k];
-            if (v !== undefined && v !== "")
+            if (v !== undefined)
                 return `${k}:${v}`;
         }
         return "";
@@ -76,8 +77,10 @@ Singleton {
         _save();
     }
 
+    // Not before the state file loads: its switch and levels aren't known
+    // yet, and a write would be read back as the file.
     onAlertingChanged: {
-        if (!enabled)
+        if (!enabled || !_loaded)
             return;
         if (alerting) {
             restoreTimer.stop();
@@ -95,12 +98,15 @@ Singleton {
         if (!reopened.length)
             return;
         const left = Object.assign({}, pending);
+        const back = Object.assign({}, restored);
         for (const n of reopened) {
             const key = appKey(n);
             Quickshell.execDetached(["wpctl", "set-volume", `${n.id}`, pending[key].volume.toFixed(3)]);
+            back[n.id] = { volume: pending[key].volume, at: Date.now() };
             delete left[key];
         }
         pending = left;
+        restored = back;
         _save();
     }
 
@@ -112,12 +118,18 @@ Singleton {
         const next = Object.assign({}, saved);
         const left = Object.assign({}, pending);
         for (const n of streams) {
-            if (!n.ready || isAlert(n) || !n.audio || next[n.id] || reopened.includes(n))
+            if (!n.ready || isAlert(n) || !n.audio || next[n.id])
                 continue;
+            const key = appKey(n);
+            // Already at the ducked level, with its own level kept.
+            if (reopened.includes(n)) {
+                next[n.id] = { key, volume: pending[key].volume, ducked: pending[key].ducked };
+                delete left[key];
+                continue;
+            }
             const back = restored[n.id];
             const volume = back && Date.now() - back.at < 1000 ? back.volume : n.audio.volume;
             const ducked = volume * level;
-            const key = appKey(n);
             next[n.id] = { key, volume, ducked };
             // Its app plays at a level of its own again.
             delete left[key];
@@ -165,6 +177,12 @@ Singleton {
         file.setText(JSON.stringify({ enabled, pending: keep }) + "\n");
     }
 
+    // An alert that started before the file loaded.
+    function _start() {
+        if (enabled && alerting)
+            _duck();
+    }
+
     FileView {
         id: file
 
@@ -183,6 +201,14 @@ Singleton {
             } catch (e) {
                 console.warn(`Ducking: ignoring unreadable ${root.path}: ${e}`);
             }
+            root._start();
+        }
+        // No file yet: the defaults.
+        onLoadFailed: {
+            if (root._loaded)
+                return;
+            root._loaded = true;
+            root._start();
         }
     }
 
