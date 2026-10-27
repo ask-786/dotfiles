@@ -18,7 +18,8 @@ Singleton {
     readonly property bool micMuted: source?.audio?.muted ?? false
     readonly property bool bluetooth: sink?.properties?.["device.api"] === "bluez5"
 
-    readonly property var sinks: Pipewire.nodes.values.filter(n => n.isSink && n.audio && !n.isStream)
+    // WirePlumber's role loopbacks (Ducking) aren't devices to pick.
+    readonly property var sinks: Pipewire.nodes.values.filter(n => n.isSink && n.audio && !n.isStream && n.properties["policy.role-based.target"] !== "true")
     readonly property var sources: Pipewire.nodes.values.filter(n => !n.isSink && n.audio && !n.isStream)
 
     // The form factor lives on the pipewire device, which nodes don't expose;

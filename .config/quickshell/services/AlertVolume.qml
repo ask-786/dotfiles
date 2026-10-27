@@ -71,11 +71,11 @@ Singleton {
 
     // WirePlumber leaves a stream that sets its own volume alone (no jump
     // from the old level) and saves that volume for the role. paplay's
-    // volume is on the same scale as wpctl's, 65536 = 100%. The tag keeps
-    // Ducking from lowering media for it.
+    // volume is on the same scale as wpctl's, 65536 = 100%. Like any alert, it
+    // ducks media while it plays.
     Process {
         id: chime
-        command: ["paplay", "--property=media.role=event", "--property=quickshell.preview=alert-volume", `--volume=${Math.round(Math.max(root.target, 0) * 65536)}`, root.sound]
+        command: ["paplay", "--property=media.role=event", `--volume=${Math.round(Math.max(root.target, 0) * 65536)}`, root.sound]
         onExited: {
             if (root._replay) {
                 root._replay = false;
@@ -88,7 +88,7 @@ Singleton {
     }
 
     // Only watched while quick settings is open; WirePlumber rewrites the
-    // file on every stream volume change, ducking included.
+    // file on every stream volume change.
     FileView {
         id: file
 
