@@ -7,7 +7,10 @@ local globals = require("config.globals")
 --
 hl.on("hyprland.start", function()
 	hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
-	hl.exec_cmd("qs")
+	-- "quickshell", not "qs": CachyOS ananicy rules renice a process named qs to
+	-- +10 ("Service"), which starves the shell under load. Pin it to -4, the
+	-- same as terminals (and the builds/upgrades they start); RLIMIT_NICE allows it.
+	hl.exec_cmd("renice -n -4 -p $$ >/dev/null; exec quickshell")
 	hl.exec_cmd("playerctld daemon") -- media keys follow the last active player
 	hl.exec_cmd("~/.config/hypr/scripts/random-wallpaper.sh --boot") -- starts hyprpaper
 	hl.exec_cmd(globals.terminal, { workspace = "9 silent" })
