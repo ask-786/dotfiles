@@ -64,7 +64,37 @@ ShellRoot {
     // Singletons load on first use, and nothing else reads this one.
     readonly property bool usb: Usb.watching
 
-    // For keybinds:
+    // Keybinds: Hyprland sends these to the running shell over Wayland
+    // (hl.dsp.global("quickshell:<name>") in binds.lua), so a key press doesn't
+    // start a `qs ipc call` process, which can take 150+ ms under load.
+    Variants {
+        model: ["quick", "calendar", "notifications", "devices", "media"]
+
+        GlobalShortcut {
+            required property string modelData
+
+            name: modelData
+            description: `Toggle the ${modelData} drawer`
+            onPressed: Panels.toggle(modelData, Hyprland.focusedMonitor?.name ?? "")
+        }
+    }
+
+    GlobalShortcut {
+        name: "reminders"
+        description: "New reminder in the calendar drawer"
+        onPressed: Panels.toggle("calendar", Hyprland.focusedMonitor?.name ?? "", "reminders")
+    }
+
+    GlobalShortcut {
+        name: "powermenu"
+        description: "Quick settings with the power row expanded"
+        onPressed: {
+            Panels.powerMenu = true;
+            Panels.toggle("quick", Hyprland.focusedMonitor?.name ?? "");
+        }
+    }
+
+    // For scripts:
     //   qs ipc call drawer toggle quick        (or calendar, notifications, devices, media)
     //   qs ipc call drawer page quick wifi     (wifi | bluetooth | audio | settings)
     //   qs ipc call drawer page calendar reminders   (new reminder form)
