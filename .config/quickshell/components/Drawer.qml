@@ -30,7 +30,7 @@ PanelWindow {
 
     Behavior on progress {
         NumberAnimation {
-            duration: root.open ? Theme.slow : Theme.normal
+            duration: root.open ? Theme.normal : Theme.fast
             easing.type: Easing.BezierSpline
             easing.bezierCurve: root.open ? Theme.emphasized : Theme.emphasizedAccel
         }
