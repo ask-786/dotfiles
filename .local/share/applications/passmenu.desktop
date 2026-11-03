@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Passmenu
+Comment=Pick a password from pass and copy it to the clipboard
+Exec=passmenu
+Icon=gcr-password
+Terminal=false
+Categories=Utility;
+Keywords=pass;password;passwords;secret;
