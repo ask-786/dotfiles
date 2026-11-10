@@ -60,6 +60,12 @@ bindkey "^[[1;5D" backward-word
 bindkey "^[[1;5C" forward-word
 bindkey "^H" backward-kill-word
 
+# Up/Down step through history entries containing what is typed (zsh-history-substring-search)
+bindkey "^[[A" history-substring-search-up
+bindkey "^[[B" history-substring-search-down
+bindkey "${terminfo[kcuu1]}" history-substring-search-up
+bindkey "${terminfo[kcud1]}" history-substring-search-down
+
 # tmux sessionizer
 bindkey -s "^f" "tmux-sessionizer \n"
 bindkey -s "^t" "tmux new \n"
