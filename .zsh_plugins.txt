@@ -1,0 +1,13 @@
+# zsh plugins, loaded by antidote from ~/.zshrc. Run `antidote update` to update.
+
+# oh-my-zsh: environment setup, core lib, plugins and theme
+getantidote/use-omz
+ohmyzsh/ohmyzsh path:lib
+ohmyzsh/ohmyzsh path:plugins/git
+ohmyzsh/ohmyzsh path:themes/robbyrussell.zsh-theme
+
+zsh-users/zsh-completions kind:fpath path:src
+zsh-users/zsh-autosuggestions
+
+# must stay last: it wraps every widget defined before it
+zsh-users/zsh-syntax-highlighting
