@@ -172,4 +172,7 @@ hl.bind(
 	)
 )
 
+-- OCR: select a region, copy its text to the clipboard
+hl.bind(mod("SHIFT + T"), hl.dsp.exec_cmd("~/.config/hypr/scripts/ocr.sh"))
+
 hl.bind(mod("SHIFT + W"), hl.dsp.exec_cmd("~/.config/hypr/scripts/random-wallpaper.sh"))
