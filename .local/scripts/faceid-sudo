@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Toggle howdy face unlock for sudo: faceid-sudo [on|off|status]
+# With no argument, flips the current state.
+
+pam=/etc/pam.d/sudo
+lines='auth\s.*(pam_howdy\.so|linux-enable-ir-emitter)'
+
+state() {
+    if grep -qE "^$lines" "$pam"; then echo on; else echo off; fi
+}
+
+action=$1
+if [[ -z $action ]]; then
+    [[ $(state) == on ]] && action=off || action=on
+fi
+
+case $action in
+    status) ;;
+    on) sudo sed -i -E "s/^#($lines)/\1/" "$pam" || exit ;;
+    off) sudo sed -i -E "s/^($lines)/#\1/" "$pam" || exit ;;
+    *)
+        echo "usage: faceid-sudo [on|off|status]" >&2
+        exit 1
+        ;;
+esac
+
+echo "face unlock for sudo: $(state)"
