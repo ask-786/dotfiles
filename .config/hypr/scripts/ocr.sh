@@ -3,7 +3,7 @@
 set -o pipefail
 
 region=$(slurp) || exit 0   # Esc / cancelled selection
-text=$(grim -g "$region" -s 2 - | tesseract - - -l "${OCR_LANG:-eng}" 2>/dev/null | sed -e 's/[[:space:]]*$//' -e '/./,$!d')
+text=$(grim -g "$region" -s 2 - | tesseract - - -l "${OCR_LANG:-eng+mal}" 2>/dev/null | sed -e 's/[[:space:]]*$//' -e '/./,$!d')
 
 if [[ -z "${text//[[:space:]]/}" ]]; then
 	notify-send -a "OCR" -i edit-copy "OCR" "No text found"
