@@ -89,6 +89,11 @@ ShellRoot {
         name: "powermenu"
         description: "Quick settings with the power row expanded"
         onPressed: {
+            // Drawers can't show over the lock: point at its own buttons.
+            if (Lock.locked) {
+                Lock.powerKey();
+                return;
+            }
             Panels.powerMenu = true;
             Panels.toggle("quick", Hyprland.focusedMonitor?.name ?? "");
         }

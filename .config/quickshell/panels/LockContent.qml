@@ -11,7 +11,9 @@ import qs.services
 // date above the password field (where hyprlock had them), and below it
 // anything that needs you: fired reminders, what's playing, running timers
 // and a one-line-each list of the latest chats and notifications (no bodies
-// or actions while locked). The battery sits bottom right, like the bar.
+// or actions while locked). The battery sits bottom right, like the bar;
+// restart and shut down sit bottom left (two clicks each), so a faillock
+// lockout never leaves you stuck.
 Item {
     id: root
 
@@ -307,6 +309,92 @@ Item {
                 text: `${Battery.percent}%`
                 color: Battery.low ? Theme.red : Theme.fg
             }
+        }
+    }
+
+    // --------------------------------------------------------------- power
+
+    Row {
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.margins: Theme.padding
+        spacing: 6
+
+        LockPowerButton {
+            icon: Icons.restart
+            label: "Restart"
+            cmd: ["systemctl", "reboot"]
+        }
+
+        LockPowerButton {
+            icon: Icons.power
+            label: "Shut down"
+            cmd: ["systemctl", "poweroff"]
+        }
+    }
+
+    // A pill like the battery's; the first click arms it ("Confirm?"), a
+    // second within 3 s runs it. Clicks don't take focus from the field.
+    component LockPowerButton: Rectangle {
+        id: pbtn
+
+        property string icon
+        property string label
+        property var cmd: []
+        property bool armed: false
+
+        width: pbtnRow.implicitWidth + 2 * Theme.padding
+        height: Theme.barHeight
+        radius: Theme.radius
+        color: armed ? Theme.urgentBg : Theme.bg
+        border.width: 1
+        border.color: armed ? Theme.urgentBorder : Lock.powerHint ? Theme.accent : Theme.border
+
+        Behavior on color {
+            ColorAnimation { duration: Theme.normal }
+        }
+        Behavior on border.color {
+            ColorAnimation { duration: Theme.normal }
+        }
+
+        Row {
+            id: pbtnRow
+
+            anchors.centerIn: parent
+            spacing: 6
+
+            Icon {
+                anchors.verticalCenter: parent.verticalCenter
+                text: pbtn.icon
+                size: 16
+                color: pbtn.armed ? Theme.primaryFg : Theme.fg
+            }
+
+            StyledText {
+                anchors.verticalCenter: parent.verticalCenter
+                text: pbtn.armed ? "Confirm?" : pbtn.label
+                color: pbtn.armed ? Theme.primaryFg : Theme.fg
+            }
+        }
+
+        StateLayer {
+            radius: Theme.radius
+            onClicked: {
+                if (pbtn.armed) {
+                    pbtn.armed = false;
+                    Quickshell.execDetached(pbtn.cmd);
+                } else {
+                    pbtn.armed = true;
+                    pdisarm.restart();
+                }
+            }
+        }
+
+        Timer {
+            id: pdisarm
+
+            interval: 3000
+            onTriggered: pbtn.armed = false
         }
     }
 

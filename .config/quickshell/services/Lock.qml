@@ -25,6 +25,10 @@ Singleton {
     // Under the field: PAM's messages, or why the last attempt failed.
     property string status: ""
     property bool statusIsError: false
+    // The power key was pressed while locked: LockContent highlights its
+    // restart / shut down buttons for a moment (the QS power menu can't
+    // show over the lock).
+    property bool powerHint: false
 
     // What was on screen, one half-size shot per monitor (<name>.ppm),
     // blurred behind the lock screen like hyprlock's `path = screenshot`.
@@ -108,6 +112,18 @@ Singleton {
     function _fail(text) {
         status = text;
         statusIsError = true;
+    }
+
+    function powerKey() {
+        powerHint = true;
+        powerHintTimer.restart();
+    }
+
+    Timer {
+        id: powerHintTimer
+
+        interval: 3000
+        onTriggered: root.powerHint = false
     }
 
     Process {
