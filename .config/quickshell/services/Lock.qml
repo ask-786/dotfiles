@@ -5,10 +5,13 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pam
 
-// The lock screen's state and its PAM conversation (replaces hyprlock). It
-// uses hyprlock's stack, /etc/pam.d/hyprlock, so the order is unchanged:
-// the password is tried first, and an empty Enter or a wrong password falls
-// through to face unlock (howdy). PAM starts on Enter, not on lock, so a
+// The lock screen's state and its PAM conversation (replaces hyprlock).
+// A typed password runs pam/qs-lock (this config's own stacks, not
+// /etc/pam.d): the password first, and a wrong one counts towards faillock,
+// then falls through to face unlock (howdy). An empty Enter runs
+// pam/qs-lock-face, face only, which never counts and still works while
+// wrong passwords have locked the password out (a broken camera mustn't
+// lock you out of your own screen). PAM starts on Enter, not on lock, so a
 // failed attempt can't loop when faillock refuses straight away.
 //
 // Locking goes through `loginctl lock-session` → hypridle's lock_cmd →
@@ -48,6 +51,10 @@ Singleton {
 
     property string _pending: ""
     property bool _hasPending: false
+    // faillock refused this attempt (the password is locked out), and the
+    // minutes it said were left, if any.
+    property bool _lockedOut: false
+    property int _lockedMinutes: 0
 
     function lock() {
         if (persist.locked || locking)
@@ -107,6 +114,10 @@ Singleton {
         }
         _pending = text;
         _hasPending = true;
+        _lockedOut = false;
+        _lockedMinutes = 0;
+        if (!pam.active)
+            pam.config = faceOnly ? "qs-lock-face" : "qs-lock";
         if (!pam.active && !pam.start()) {
             _hasPending = false;
             _fail("Couldn't start authentication");
@@ -171,7 +182,9 @@ Singleton {
     PamContext {
         id: pam
 
-        config: "hyprlock"
+        // Set per attempt in submit().
+        config: "qs-lock"
+        configDirectory: `${Quickshell.shellDir}/pam`
 
         onPamMessage: {
             if (responseRequired) {
@@ -180,8 +193,16 @@ Singleton {
                     respond(root._pending);
                     root._pending = "";
                 }
-                // Otherwise a second prompt (the stack's `include login`
-                // asks again after face unlock failed): wait for Enter.
+                // Otherwise an unexpected second prompt: wait for Enter.
+                return;
+            }
+            // pam_faillock's preauth: "The account is locked due to 3
+            // failed logins." and "(9 minutes left to unlock)".
+            const left = message.match(/(\d+) minutes? left/);
+            if (left)
+                root._lockedMinutes = parseInt(left[1]);
+            if (left || /account is locked/i.test(message)) {
+                root._lockedOut = true;
                 return;
             }
             if (message.trim() !== "") {
@@ -198,6 +219,9 @@ Singleton {
                 root.statusIsError = false;
                 persist.locked = false;
                 root._removeShots();
+            } else if (root._lockedOut) {
+                const m = root._lockedMinutes;
+                root._fail(`Password locked${m > 0 ? ` for ${m} min` : ""}, press Enter for face`);
             } else if (result === PamResult.MaxTries) {
                 root._fail("Too many attempts, try again later");
             } else {

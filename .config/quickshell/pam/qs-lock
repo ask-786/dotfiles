@@ -1,0 +1,13 @@
+# Quickshell lock screen, typed password (services/Lock.qml loads it via
+# PamContext.configDirectory; nothing in /etc/pam.d).
+# Only a wrong password counts towards faillock (3 tries, /etc/security/faillock.conf);
+# it then falls through to face unlock. A face unlock clears the count.
+# While locked out this refuses at once; an empty Enter (qs-lock-face) still works.
+
+auth       requisite    pam_faillock.so preauth
+auth       [success=4 default=ignore]  pam_unix.so nodelay
+auth       [default=ignore]  pam_faillock.so authfail
+auth       optional     pam_exec.so /usr/bin/linux-enable-ir-emitter run --config /home/ask/.config/linux-enable-ir-emitter.toml
+auth       [success=1 default=ignore]  pam_howdy.so
+auth       requisite    pam_deny.so
+auth       required     pam_faillock.so authsucc

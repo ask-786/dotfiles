@@ -12,8 +12,8 @@ import qs.services
 // anything that needs you: fired reminders, what's playing, running timers
 // and a one-line-each list of the latest chats and notifications (no bodies
 // or actions while locked). The battery sits bottom right, like the bar;
-// restart and shut down sit bottom left (two clicks each), so a faillock
-// lockout never leaves you stuck.
+// restart and shut down sit bottom left (two clicks each), so a broken face
+// unlock or a faillock lockout never leaves you stuck.
 Item {
     id: root
 

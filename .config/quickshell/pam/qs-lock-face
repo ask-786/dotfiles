@@ -1,0 +1,9 @@
+# Quickshell lock screen, empty Enter: face only (services/Lock.qml, via
+# PamContext.configDirectory).
+# A failed face check doesn't count towards faillock, and this works even while
+# wrong passwords have locked the password out. A face unlock clears that count.
+
+auth       optional     pam_exec.so /usr/bin/linux-enable-ir-emitter run --config /home/ask/.config/linux-enable-ir-emitter.toml
+auth       [success=1 default=ignore]  pam_howdy.so
+auth       requisite    pam_deny.so
+auth       required     pam_faillock.so authsucc
